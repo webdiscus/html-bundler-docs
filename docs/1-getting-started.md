@@ -69,7 +69,7 @@ export default config;
       <figcaption>Hope you're in high spirits!</figcaption>
     </figure>
     <p>
-      The page was generated using
+      This page was generated using the
       <a href="https://github.com/webdiscus/html-bundler-webpack-plugin">HTML Builder Plugin</a>
     </p>
   </body>
@@ -98,7 +98,7 @@ h1 {
 npx webpack build --mode production
 ```
 
-New in Webpack? See [Getting Started][webpack-getting-started-url]
+New to Webpack? See [Getting Started][webpack-getting-started-url]
 
 [hello-world-demo-url]: https://stackblitz.com/edit/webpack-webpack-js-org-nzje589a?file=README.md
 [node-url]: https://nodejs.org/
