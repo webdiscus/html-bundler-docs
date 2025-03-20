@@ -11,31 +11,96 @@
 npm install html-bundler-webpack-plugin --save-dev
 ```
 
-#### Recommended Webpack loaders
+### Quick start
 
-| Resources | Loader                           | Notes |
-| --------- | -------------------------------- | ----- |
-| JS/TS     | [babel-loader][babel-loader-url] |       |
-| JS/TS     | [swc-loader][swc-loader-url]     |       |
-| CSS       | [css-loader][css-loader-url]     |       |
-| SASS/SCSS | [sass-loader][sass-loader-url]   |       |
+[Source code](../examples/hello-world) | [Open in Stackblitz][hello-world-demo-url]
 
-#### Recommended Webpack optimization plugins (optional)
+```bash
+npm i -D webpack css-loader html-bundler-webpack-plugin
+```
 
-| Resources | Plugin                                                               | Notes |
-| --------- | -------------------------------------------------------------------- | ----- |
-| JS        | [terser-webpack-plugin][terser-webpack-plugin-url]                   |       |
-| JS        | [swc-minify-webpack-plugin][swc-minify-webpack-plugin-url]           |       |
-| HTML      | [html-minimizer-webpack-plugin][html-minimizer-webpack-plugin-url]   |       |
-| Images    | [image-minimizer-webpack-plugin][image-minimizer-webpack-plugin-url] |       |
+[webpack.config.js](../examples/hello-world/webpack.config.js)
 
-[babel-loader-url]: https://github.com/babel/babel-loader
-[css-loader-url]: https://github.com/webpack-contrib/css-loader
-[html-minimizer-webpack-plugin-url]: https://github.com/webpack-contrib/html-minimizer-webpack-plugin
-[image-minimizer-webpack-plugin-url]: https://github.com/webpack-contrib/image-minimizer-webpack-plugin
+```js
+import HtmlBundlerPlugin from "html-bundler-webpack-plugin";
+
+/** @type {import('webpack').Configuration} */
+const config = {
+  output: {
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ["css-loader"],
+      },
+      {
+        test: /\.(png|jpg)/,
+        type: "asset/resource",
+      },
+    ],
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: "src/views",
+    }),
+  ],
+};
+
+export default config;
+```
+
+[src/views/index.html](../examples/hello-world/src/views/index.html)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Hello World</title>
+    <link href="../img/favicon.png" rel="icon" />
+    <link href="../css/styles.css" rel="stylesheet" />
+    <script src="../js/main.js"></script>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <figure>
+      <img src="../img/a91275e9-43e4-4f8a-b2d7-1146112b5d9b.jpg" alt="An example" width="1344" height="768" />
+      <figcaption>Hope you're in high spirits!</figcaption>
+    </figure>
+    <p>
+      This page was generated using the
+      <a href="https://github.com/webdiscus/html-bundler-webpack-plugin">HTML Builder Plugin</a>
+    </p>
+  </body>
+</html>
+```
+
+[src/js/main.js](../examples/hello-world/src/js/main.js)
+
+```js
+console.log(">> main");
+```
+
+[src/css/styles.css](../examples/hello-world/src/css/styles.css)
+
+```css
+body {
+  font-family: "OpenSans", sans-serif;
+}
+
+h1 {
+  color: orangered;
+}
+```
+
+```bash
+npx webpack build --mode production
+```
+
+New to Webpack? See [Getting Started][webpack-getting-started-url]
+
+[hello-world-demo-url]: https://stackblitz.com/edit/webpack-webpack-js-org-nzje589a?file=README.md
 [node-url]: https://nodejs.org/
-[sass-loader-url]: https://github.com/webpack-contrib/sass-loader
-[swc-loader-url]: https://swc.rs/docs/usage/swc-loader
-[swc-minify-webpack-plugin-url]: https://github.com/guoyunhe/swc-minify-webpack-plugin
-[terser-webpack-plugin-url]: https://github.com/webpack-contrib/terser-webpack-plugin
+[webpack-getting-started-url]: https://webpack.js.org/guides/getting-started/#using-a-configuration
 [webpack-url]: https://webpack.js.org/

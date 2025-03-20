@@ -1,0 +1,16 @@
+{
+  "name": "hello-world",
+  "description": "Quick-start template for compiling static HTML pages with Webpack and html-bundler-webpack-plugin",
+  "version": "0.0.3",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "webpack build --mode production"
+  },
+  "devDependencies": {
+    "css-loader": "^7",
+    "html-bundler-webpack-plugin": "^4",
+    "webpack": "^5",
+    "webpack-cli": "^6"
+  }
+}
