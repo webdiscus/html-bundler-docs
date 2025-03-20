@@ -1,0 +1,23 @@
+{
+  "version": "0.2",
+  "maxNumberOfProblems": 500,
+  "language": "en",
+  "dictionaries": [
+    "!aws",
+    "!cryptocurrencies",
+    "fullstack",
+    "project-dictionary"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-dictionary",
+      "description": "Additional dictionary",
+      "path": "./.cspell/project-dic.txt"
+    }
+  ],
+  "useGitignore": true,
+  "ignorePaths": [
+    ".cspell/**",
+    "**/dist/**"
+  ]
+}

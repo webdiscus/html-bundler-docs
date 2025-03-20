@@ -1,0 +1,35 @@
+{
+  "name": "html-bundler-docs",
+  "version": "0.0.1",
+  "description": "Documentation for html-bundler-webpack-plugin",
+  "homepage": "https://github.com/webdiscus/html-bundler-docs#readme",
+  "bugs": {
+    "url": "https://github.com/webdiscus/html-bundler-docs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webdiscus/html-bundler-docs.git"
+  },
+  "license": "ISC",
+  "type": "module",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "workspaces": [
+    "examples/*"
+  ],
+  "scripts": {
+    "format": "dprint check",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!**/node_modules/**\"",
+    "lint:spelling": "cspell lint --show-context \"**/*.{html,md,js}\""
+  },
+  "devDependencies": {
+    "@dprint/json": "^0.20.0",
+    "@dprint/markdown": "^0.18.0",
+    "cspell": "^8.17.5",
+    "dprint": "^0.49.1",
+    "malva": "^0.11.2",
+    "markdownlint-cli2": "^0.17.2"
+  }
+}
