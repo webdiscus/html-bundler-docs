@@ -5,6 +5,8 @@
   "code-fence-style": {
     "style": "backtick"
   },
+  "blanks-around-lists": true, // dprint is not aware
+  "blanks-around-fences": true, // dprint is not aware
   "emphasis-style": {
     "style": "asterisk"
   },
@@ -31,12 +33,12 @@
   },
   "no-blanks-blockquote": false,
   "no-duplicate-heading": {
-    "siblings_only": true
+    "siblings_only": false
   },
-  "no-emphasis-as-heading": false,
+  "no-emphasis-as-heading": true,
   "no-inline-html": false,
   "ol-prefix": {
-    "style": "one"
+    "style": "one_or_ordered" // dprint is not aware
   },
   "strong-style": {
     "style": "asterisk"
