@@ -47,7 +47,7 @@ module.exports = {
 
 #### `string`
 
-**Type**: string
+**Type**: `string`
 
 Specifies an absolute or relative path to a JSON or JavaScript file. For a JavaScript file,
 ensure the module exports an object.
