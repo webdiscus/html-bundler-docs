@@ -1,0 +1,391 @@
+---
+sidebar_position: 100
+slug: /plugin-options-preload
+title: preload
+tags: [HTML, preload, assets]
+---
+
+# Preload assets
+
+Option: `preload`
+
+Type:
+
+```ts
+type Preload = Array<{
+  test: RegExp;
+  filter?: PreloadFilter;
+  as?: string;
+  rel?: string;
+  type?: string;
+  attributes?: { [attributeName: string]: string | boolean };
+}>;
+```
+
+```ts
+type PreloadFilter =
+  | RegExp
+  | Array<RegExp>
+  | { includes?: Array<RegExp>; excludes?: Array<RegExp> }
+  | ((asset: { sourceFiles: Array<string>; outputFile: string }) => void | boolean);
+```
+
+Default: `null`
+
+Generates and injects preload tags `<link rel="preload">` in the head before all `link` or `script` tags for all matching source assets resolved in templates and styles.
+
+The descriptions of the properties:
+
+- `test` - an RegEpx to match source asset files.
+- `filter` - an advanced filter to preload only matched output asset files.
+- `as` - a content type, one of `audio` `document` `embed` `font` `image` `object` `script` `style` `track` `video` `worker`
+- `rel` - a value indicates how to load a resource, one of `preload` `prefetch` , defaults `preload`
+- `type` - a [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the content.\
+  Defaults the type is detected automatically, for example:
+  - `picture.png` as `image/png`
+  - `picture.jpg` as `image/jpeg`
+  - `picture.svg` as `image/svg+xml`
+  - `film.mp4` as `video/mp4`
+  - `film.ogv` as `video/ogg`
+  - `film.webm` as `video/webm`
+  - `sound.mp3` as `audio/mpeg`
+  - `sound.oga` as `audio/ogg`
+  - `sound.weba` as `audio/webm`
+  - etc.
+- `attributes` - an object with additional custom attributes like `crossorigin` `media` etc. Defaults `{}`.\
+For example:
+  - `attributes: { crossorigin: true }`
+  - `attributes: { media: '(max-width: 900px)' }`
+  - `attributes: { fetchpriority: 'high' }`
+
+> :::info
+>
+> The `true` value of a property will be rendered as an attribute w/o a value.
+>
+> For example, the  `attributes: { crossorigin: true }` will be rendered to:
+> ```html
+> <link rel="preload" ... crossorigin />
+> ```
+>
+> Setting the [crossorigin](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin) attribute to an empty value, like `crossorigin` or `crossorigin=""`, is the same as `anonymous`.
+
+If you define the `attributes` than you can write the `as`, `rel` and `type` properties in the `attributes`.
+
+For example:
+
+```js
+{
+  test: /\.(ttf|woff2?)$/,
+  attributes: { as: 'font', rel: 'prefetch', crossorigin: true },
+},
+```
+
+<a id="option-preload-filter" name="option-preload-filter"></a>
+
+### `filter` option
+
+By default, all files matching the `test` option will be preloaded.
+You can use the `filter` to preload specific files individually.
+
+The `PreloadFilter` type provides a versatile way to define filtering logic,
+from simple patterns to complex inclusion and exclusion criteria.
+
+The filter RegExp matches both the source and output files.
+If you need to match source or output files separately use the filter function, see below.
+
+Here's are supported filter formats:
+
+- `RegExp`\
+The filter matches a value if it satisfies this single regular expression.\
+Works the same as `{ includes: [RegExp,] }`.\
+For example:
+ ```js
+ filter: /vendor/, // preload files containing the `vendor` string only
+   ```
+
+- `Array<RegExp>`\
+Matches a value if it satisfies **at least one** of the regular expressions in the array.\
+Works the same as `{ includes: [RegExp1, RegExp2, ...] }`.\
+For example:
+```js
+filter: [/vendor1/, /vendor2/,], // preload files containing the `vendor1` or `vendor2`
+  ```
+
+- `{ includes?: Array<RegExp>; excludes?: Array<RegExp> }`\
+An object with optional `includes` and `excludes` arrays of regular expressions.\
+For more advanced filtering where inclusion and exclusion criteria need to be combined:
+- `includes`: Matches values that satisfy **at least one** of the regular expressions in the array.
+- `excludes`: Rejects values that satisfy **at least one** of the regular expressions in the array.
+- For `includes` and `excludes`, the logic is AND: a value must match the `includes` patterns and **not match** the `excludes` patterns.
+
+For example:
+```js
+filter: {
+  includes: [/include-this/,],
+  excludes: [/exclude-this/,],
+}
+  ```
+- `(asset: { sourceFiles: Array<string>; outputFile: string }) => void | boolean`\
+Custom logic provides maximum flexibility for filtering that cannot be expressed with regular expressions.\
+A custom filter function takes the source files and the output asset file as input, and decides whether they match based on the return value:
+- Returns `void` (`undefined`) or `true` if the value passes the filter.
+- Returns `false` if the value fails the filter.
+
+> :::info
+> Only `style` type may have many files in the `sourceFiles`.\
+> If many styles are imported in one JS file, then all extracted CSS will be squashed into single CSS file with the name of a JS parent file.
+> In this case the `sourceFiles` will have many files.
+>
+> Usage for `style` type:
+> ```js
+> {
+>   test: /\.(s?css|less)$/,
+>   filter: ({ sourceFiles, outputFile }) => {
+>     return !sourceFiles.some((sourceFile) => /noPreload/.test(sourceFile));
+>   },
+>   as: 'style',
+> },
+> ```
+>
+> All other types have only one file in the `sourceFiles` array.
+> You can use the argument destructor to extract only first source file.
+>
+> Usage for all other types:
+> ```js
+> {
+>   test: /\.(js|ts)$/,
+>   filter: ({ sourceFiles: [sourceFile], outputFile }) => !/noPreload/.test(outputFile),
+>   as: 'script',
+> },
+> ```
+
+For example, preload all JS files except dynamically imported (async chunks).
+
+There is the _app.js_:
+
+```js
+// specify the name of an individual chunk to exclude from preloading
+import(
+ /* webpackChunkName: "moduleA.asyncChunk" */
+ './moduleA',
+);
+
+import('./moduleB'); // other asyncChunk which should be preloaded
+import './moduleC'; // normal module
+```
+
+Use the `filter` preload option to exclude files:
+```js
+preload: [
+  {
+    test: /\.(js|ts)$/,
+    filter: {
+      // matches source and output files
+      excludes: [/asyncChunk/],
+    },
+    as: 'script',
+  },
+],
+```
+
+The same effect using the `filter` function:
+```js
+preload: [
+  {
+    test: /\.(js|ts)$/,
+    filter: ({ sourceFiles: [sourceFile], outputFile }) => !/asyncChunk/.test(sourceFile)),
+    as: 'script',
+  },
+],
+```
+
+### Preload styles
+
+```js
+preload: [
+  {
+    test: /\.(css|scss|less)$/,
+    as: 'style',
+  },
+],
+```
+
+The generated preload tag like the following:
+
+```html
+<link rel="preload" href="css/style.1f4faaff.css" as="style" />
+```
+
+### Preload scripts
+
+```js
+preload: [
+  {
+    test: /\.(js|ts)$/,
+    as: 'script',
+  },
+],
+```
+
+The generated preload tag like the following:
+
+```html
+<link rel="preload" href="js/main.c608b1cd.js" as="script" />
+```
+
+### Preload images
+
+To preload all images use the options:
+
+```js
+preload: [
+  {
+    test: /\.(png|jpe?g|webp|svg)$/,
+    as: 'image',
+  },
+],
+```
+
+The generated preload tags like the following:
+
+```html
+<link rel="preload" href="img/apple.697ef306.png" as="image" type="image/png" />
+<link rel="preload" href="img/lemon.3666c92d.svg" as="image" type="image/svg+xml" />
+```
+
+You can preload images with a URL query, e.g. `image.png?size=640`, using the `media` attribute:
+
+```js
+preload: [
+  {
+    test: /\.(png|jpe?g|webp)\?.*size=480/,
+    attributes: { as: 'image', media: '(max-width: 480px)' },
+  },
+  {
+    test: /\.(png|jpe?g|webp)\?.*size=640/,
+    attributes: { as: 'image', media: '(max-width: 640px)' },
+  },
+],
+```
+
+> :::info
+>
+> The `media` attribute be useful when used [responsive-loader](https://www.npmjs.com/package/responsive-loader).
+
+### Preload fonts
+
+```js
+preload: [
+  {
+    test: /\.(ttf|woff2?)$/,
+    attributes: { as: 'font', crossorigin: true },
+  },
+],
+```
+
+> :::info
+>
+> Font preloading [requires](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload#cors-enabled_fetches) the `crossorigin` attribute to be set.\
+> If the `crossorigin` property is not defined, it will be added for the `font` type automatically.
+>
+> See [font preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload#what_types_of_content_can_be_preloaded).
+
+
+### Preload tags order
+
+The generated preload tags are grouped by content type and sorted in the order of the specified `preload` options.
+
+For example, there is an HTML template with specified source assets:
+
+```html
+<html>
+  <head>
+    <script src="./main.js" defer></script>
+    <link href="./style.scss" rel="stylesheet" />
+  </head>
+  <body>
+    <img src="./apple.png" alt="apple" />
+    <script src="./app.js"></script>
+    <img src="./lemon.svg" alt="lemon" />
+  </body>
+</html>
+```
+
+Specify the order of preload tags:
+
+```js
+preload: [
+  // 1. preload images
+  {
+    test: /\.(png|jpe?g|webp|svg)$/,
+    as: 'image',
+  },
+  // 2. preload styles
+  {
+    test: /\.(css|scss)$/,
+    as: 'style',
+  },
+  // 3. preload scripts
+  {
+    test: /\.(js|ts)$/,
+    as: 'script',
+  },
+],
+```
+
+The generated HTML contains the preload tags exactly in the order of `preload` options:
+
+```html
+<html>
+  <head>
+    <!-- 1. preload images -->
+    <link rel="preload" href="img/apple.697ef306.png" as="image" type="image/png" />
+    <link rel="preload" href="img/lemon.3666c92d.svg" as="image" type="image/svg+xml" />
+    <!-- 2. preload styles -->
+    <link rel="preload" href="css/style.1f4faaff.css" as="style" />
+    <!-- 3. preload scripts -->
+    <link rel="preload" href="js/main.c608b1cd.js" as="script" />
+    <link rel="preload" href="js/app.2c8d13ac.js" as="script" />
+
+    <script src="js/main.c608b1cd.js" defer></script>
+    <link href="css/style.1f4faaff.css" rel="stylesheet" />
+  </head>
+  <body>
+    <img src="img/apple.697ef306.png" alt="apple" />
+    <script src="js/app.2c8d13ac.js"></script>
+    <img src="img/lemon.3666c92d.svg" alt="lemon" />
+  </body>
+</html>
+```
+
+### Preload priority
+
+The `fetchpriority` attribute helps optimize resource loading by prioritizing critical assets and deferring less important ones.
+
+**Available values:**
+
+- `auto` (default) – The browser determines the priority automatically.
+- `high` – The resource is fetched with high priority.
+- `low` – The resource is fetched with lower priority.
+
+Using `fetchpriority` is especially beneficial for improving **Core Web Vitals**,
+particularly **Largest Contentful Paint (LCP)**, by ensuring essential resources load as quickly as possible.
+
+**Example:** Preloading an LCP image with high priority
+
+```js
+preload: [
+  {
+    test: /lcp-image\.webp/i,
+    attributes: {
+      as: 'image',
+      fetchpriority: 'high',
+    },
+  },
+],
+```
+
+### More info
+
+- [Fetch priority](https://web.dev/articles/fetch-priority)
+- [Optimize Largest Contentful Paint](https://web.dev/articles/optimize-lcp)

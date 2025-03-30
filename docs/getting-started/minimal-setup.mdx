@@ -1,0 +1,163 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Minimal Setup
+
+Install additional packages for CSS/SCSS:
+
+<Tabs groupId="packages">
+  <TabItem value="npm" label="npm">
+    ```bash
+    npm install --save-dev css-loader sass sass-loader
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+    ```bash
+    yarn add --dev css-loader sass sass-loader
+    ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+    ```bash
+    pnpm add --save-dev css-loader sass sass-loader
+    ```
+  </TabItem>
+</Tabs>
+
+There is an example of the simple project structure:
+
+```
+my-project/
+├── dist/  (generated output)
+├── src/
+│   ├── images/
+│   │   ├── favicon.svg
+│   │   ├── banner.png
+│   ├── styles/
+│   │   ├── vendor.scss
+│   ├── scripts/
+│   │   ├── vendor.js
+│   ├── views/
+│   │   ├── index.html
+├── webpack.config.js
+└── package.json
+```
+
+The minimal Webpack configuration, _webpack.config.js_:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: './src/views/index.html', // path to template file
+      },
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.s?css$/,
+        use: ['css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(png|jpe?g|webp|svg)$/,
+        type: 'asset/resource',
+      },
+    ],
+  },
+};
+```
+
+> :::info
+> The `entry` key determines the output HTML filename (excluding `.html`).
+
+If your project has multiple pages, you can specify the `entry` option as a path to the pages directory.
+Generated HTML files keep the same directory structure relative to the entry path.
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: './src/views', // path to pages directory
+    }),
+  ],
+  // ...
+};
+```
+
+The template contains relative paths to source resources:
+
+<Tabs groupId="resources">
+  <TabItem value="src HTML" label="src/views/index.html">
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <title>Home</title>
+      <link href="../images/favicon.svg" rel="icon" type="image/svg+xml">
+      <link href="../styles/vendor.scss" rel="stylesheet">
+      <script src="../scripts/vendor.js" defer="defer"></script>
+    </head>
+    <body>
+      <h1>Hello World!</h1>
+      <img src="../images/banner.png" alt="banner" />
+    </body>
+    </html>
+    ```
+  </TabItem>
+  <TabItem value="dist HTML" label="dist/index.html (generated)">
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <title>Home</title>
+      <link href="f279449352a40ca7f10b.svg" rel="icon" type="image/svg+xml">
+      <link href="vendor.css" rel="stylesheet">
+      <script src="vendor.js" defer="defer"></script>
+    </head>
+    <body>
+      <h1>Hello World!</h1>
+      <img src="d4711676b8bd60d6368c.png" alt="banner" />
+    </body>
+    </html>
+    ```
+  </TabItem>
+</Tabs>
+
+Generate output:
+
+```bash
+npx webpack build --mode production
+```
+
+New to Webpack? See [Getting Started][webpack-getting-started-url].
+
+> :::info
+> - The default output directory is `dist/`.
+> - The default output filename for JS and CSS files remains the original filename without a hash:
+>   - `[name].js`
+>   - `[name].css`
+> - The default output filename for assets is `[hash][ext][query]`.
+
+The generated output:
+
+```
+my-project/
+├── dist/
+|   ├── d4711676b8bd60d6368c.png
+|   ├── f279449352a40ca7f10b.svg
+|   ├── vendor.css
+|   ├── vendor.js
+|   ├── index.html
+├── src/
+```
+
+[webpack-getting-started-url]: https://webpack.js.org/guides/getting-started/#using-a-configuration

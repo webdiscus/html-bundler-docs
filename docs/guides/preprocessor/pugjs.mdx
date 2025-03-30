@@ -1,0 +1,122 @@
+---
+sidebar_position: 2
+---
+
+# Pug
+
+Link: [Pug](https://pugjs.org)
+
+You need to install the `pug` package:
+
+```
+npm i -D pug
+```
+
+## `preprocessor: 'pug'`
+
+For example, there is the layout template _src/views/layout/default.pug_
+
+```pug
+html
+  head
+    title= title
+    script(src="@scripts/main.js" defer="defer")
+  body
+    h1= headline
+    block content
+    include @partials/footer
+```
+
+The page template _src/views/pages/home.pug_ can be extended from the layout:
+
+```pug
+extends @layouts/default
+
+block content
+  ul#people
+    each item in people
+      li= item
+```
+
+Define the `preprocessor` as `pug`:
+
+```js
+const path = require('path');
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  resolve: {
+    alias: {
+      // Aliases used in template
+      '@scripts': path.join(__dirname, 'src/scripts/'),
+      '@layouts': path.join(__dirname, 'src/views/layouts/'),
+      '@partials': path.join(__dirname, 'src/views/partials/'),
+    },
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: {
+          import: 'src/views/page/home.pug',
+          data: {
+            // Pass external data into template
+            title: 'Strartpage',
+            headline: 'Breaking Bad',
+            people: ['Walter White', 'Jesse Pinkman'],
+          },
+        },
+      },
+      preprocessor: 'pug', // Use Pug templating engine
+      preprocessorOptions: {
+        // Pug options
+      },
+    }),
+  ],
+};
+```
+
+## `preprocessorOptions`
+
+> :::note
+>
+> The `pug` preprocessor based on the [@webdiscus/pug-loader](https://github.com/webdiscus/pug-loader) source code
+> and has the same options and features.
+
+```js
+{
+  preprocessor: 'pug',
+  preprocessorOptions: {
+    // in 99.9% of common use cases you don't need any pug options
+
+    // available useful built-in filters
+    embedFilters: {
+      // enable the `:escape` filter
+      escape: true,
+
+      // enable the `:code` filter
+      code: {
+        className: 'language-', // class name of `<code>` tag
+      },
+
+      // enable `:highlight` filter
+      highlight: {
+        use: 'prismjs', // use the `prismjs` module as highlighter, must be installed
+        verbose: true,
+      },
+
+      // enable `:markdown` filter for markdown only, w/o code blocks
+      markdown: true,
+      // - OR - you can enable highlighter for code blocks used in markdown
+      markdown: {
+        highlight: {
+          use: 'prismjs', // use the `prismjs` module as highlighter, must be installed
+          verbose: true,
+        },
+      },
+    }
+  },
+},
+```
+
+See the [documentation and examples](https://webdiscus.github.io/pug-loader/pug-filters/) for the `embedded filters`.\
+See the [pug compiler options](https://pugjs.org/api/reference.html).

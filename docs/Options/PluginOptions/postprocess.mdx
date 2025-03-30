@@ -1,0 +1,49 @@
+---
+sidebar_position: 140
+slug: /plugin-options-postprocess
+title: postprocess
+tags: [HTML, template, postprocess, callback]
+---
+
+# Callback postprocess
+
+Option: `postprocess`
+
+Type:
+
+```ts
+type postprocess = (
+  content: string,
+  info: TemplateInfo,
+  compilation: Compilation
+) => string | undefined;
+
+type TemplateInfo = {
+  name: string;
+  assetFile: string;
+  sourceFile: string;
+  resource: string;
+  outputPath: string;
+};
+```
+
+Default: `null`
+
+Called after the template has been compiled, but not yet finalized, before injection of the split chunks and inline assets.
+
+The `postprocess` have the following arguments:
+
+- `content: string` - a content of processed file
+- `info: TemplateInfo` - info about current file
+- `compilation: Compilation` - the Webpack [compilation object](https://webpack.js.org/api/compilation-object/)
+
+The `TemplateInfo` have the following properties:
+
+- `name: string` - the entry name
+- `assetFile: string` - the output asset filename relative to `outputPath`
+- `sourceFile: string` - the absolute path of the source file, without a query
+- `resource: string` - the absolute path of the source file, including a query
+- `outputPath: string` - the absolute path of the output directory
+
+Return new content as a `string`.
+If return `undefined`, the result processed via Webpack plugin is ignored and will be saved a result processed via the loader.

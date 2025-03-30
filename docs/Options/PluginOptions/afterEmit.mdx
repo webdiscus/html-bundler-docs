@@ -1,0 +1,28 @@
+---
+sidebar_position: 160
+slug: /plugin-options-afterEmit
+title: afterEmit
+---
+
+# Callback afterEmit
+
+Option: `afterEmit`
+
+Type:
+
+```ts
+type AfterEmit = (
+  entries: Array<CompileEntry>,
+  compilation: Compilation
+) => Promise<void> | void;
+```
+
+Default: `null`
+
+Called after emitting assets to output directory.
+This callback can be useful to create a manifest file containing source and output filenames.
+
+Callback parameters:
+- `entries: Array<CompileEntry>` the collection of entries containing all dependent assets,\
+the description of the `CompileEntry` see by [beforeEmit](#option-beforeEmit)
+- `compilation: Compilation` - the Webpack [compilation object](https://webpack.js.org/api/compilation-object/)

@@ -1,0 +1,53 @@
+---
+sidebar_position: 10
+slug: /plugin-options-test
+title: test
+tags: [entry, test, template]
+---
+
+import TipDefault from '../../partials/tip-default.md'
+
+# Matching template files
+
+Option: `test`
+
+**Type**: `RegExp`
+
+**Default**: Engine-dependent.
+
+Defines a regular expression for matching template files that should be treated as entry points.
+
+## Default Behavior
+
+Depends on the [`preprocessor`](/plugin-options-preprocessor) configuration.
+Specifying a `preprocessor` as a supported templating engine automatically assigns
+a corresponding file type pattern to the `test` option.
+
+**Supported Preprocessors & Default Patterns**:
+
+- `eta` - `/\.(html|eta)$/i` - **Default**
+- `ejs` - `/\.(html|ejs)$/i`
+- `handlebars` - `/\.(html|hbs|handlebars)$/i`
+- `nunjucks` - `/\.(html|njk)$/i`
+- `pug` - `/\.(pug|jade)$/i`
+- `tempura` - `/\.(html|hbs|tmpr)$/i`
+- `twig` - `/\.(html|twig)$/i`
+
+## Examples
+
+**Preprocessor configuration**:
+
+```js
+new HtmlBundlerPlugin({
+  preprocessor: 'ejs', // test: /\.(html|ejs)$/i
+}),
+```
+
+**Custom pattern**:
+
+```js
+new HtmlBundlerPlugin({
+  test: /\.ejs$/i
+  preprocessor: 'ejs',
+}),
+```

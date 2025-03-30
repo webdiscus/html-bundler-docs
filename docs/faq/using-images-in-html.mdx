@@ -1,0 +1,61 @@
+---
+sidebar_position: 83
+---
+
+# How to use image references in HTML
+
+Add to Webpack config the module rule:
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.(png|jpe?g|ico|svg)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'assets/img/[name].[hash:8][ext]', // Output image filename
+      },
+    },
+  ],
+}
+```
+
+Add a source file using a relative path or Webpack alias in HTML:
+
+```html
+<html>
+  <head>
+    <link href="./favicon.ico" rel="icon" />
+  </head>
+  <body>
+    <img src="./apple.png" srcset="./apple1.png 320w, ./apple2.png 640w" alt="apple" />
+    <picture>
+      <source srcset="./fig1.jpg, ./fig2.jpg 320w, ./fig3.jpg 640w" />
+    </picture>
+  </body>
+</html>
+```
+
+The generated HTML contains hashed output images filenames:
+
+```html
+<html>
+  <head>
+    <link href="/assets/img/favicon.05e4dd86.ico" rel="icon" />
+  </head>
+  <body>
+    <img
+      src="/assets/img/apple.f4b855d8.png"
+      srcset="/assets/img/apple1.855f4bd8.png 320w, /assets/img/apple2.d8f4b855.png 640w"
+      alt="apple" />
+    <picture>
+      <source
+        srcset="
+          /assets/img/fig1.605e4dd8.jpg,
+          /assets/img/fig2.8605e4dd.jpg 320w,
+          /assets/img/fig3.e4605dd8.jpg 640w
+        " />
+    </picture>
+  </body>
+</html>
+```

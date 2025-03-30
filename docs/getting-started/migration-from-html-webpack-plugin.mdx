@@ -1,0 +1,32 @@
+---
+sidebar_position: 99
+title: Migration from html-webpack-plugin
+---
+
+# <!-- empty head because the title is too long -->
+
+## Migration from HTML Webpack Plugin
+
+For years, configuring [html-webpack-plugin][html-webpack-plugin] for multiple pages was a hassle.
+Each page required manually defining the `chunks` option to reference JavaScript files from the entry configuration,
+leading to a frustrating "chunks hell" configuration.
+
+Also, `html-webpack-plugin` alone is not enough. Rendering an HTML template containing JS, CSS, SVG, images and other assets requires additional "crutches" as plugins for `html-webpack-plugin`, as well additional plugins and loaders.
+
+Thus, this plugin requires a whole bunch of additional plugins and loaders, many of which have not been supported for a long time, which limits the use of the plugin itself.
+
+
+To solve this and many other problems,
+was created `html-bundler-webpack-plugin` — an "all-in-one" solution that simplifies HTML handling
+and automatically manages asset dependencies with ease.
+
+[html-webpack-plugin]: https://github.com/jantimon/html-webpack-plugin
+
+## Step by step
+
+TODO: describe migration process step by step
+
+```diff
+- const HtmlWebpackPlugin = require('html-webpack-plugin');
++ const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+```

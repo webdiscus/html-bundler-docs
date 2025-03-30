@@ -1,0 +1,83 @@
+---
+sidebar_position: 210
+slug: /plugin-options-watchFiles
+title: watchFiles
+---
+
+# Watch files
+
+Option: `watchFiles`
+
+Type:
+
+```ts
+type WatchFiles = {
+  paths?: Array<string>;
+  includes?: Array<RegExp>;
+  excludes?: Array<RegExp>;
+};
+```
+
+Default:
+
+```js
+watchFiles: {
+  paths: ['./src'],
+  includes: [/\.(html|ejs|eta)$/],
+  excludes: [
+    /[\\/](node_modules|dist|test)$/, // ignore standard project dirs
+    /[\\/]\..+$/, // ignore hidden dirs and files, e.g.: .git, .idea, .gitignore, etc.
+    /package(?:-lock)*\.json$/, // ignore npm files
+    /webpack\.(.+)\.js$/, // ignore Webpack config files
+    /\.(je?pg|png|ico|webp|svg|woff2?|ttf|otf|eot)$/, // exclude binary assets
+  ],
+}
+```
+
+Allows to configure paths and files to watch file changes for rebuild in `watch` or `serv` mode.
+
+> :::info
+>
+> To watch changes with a `live reload` in the browser, you must additionally configure the `watchFiles` in `devServer`,
+> see [setup live reload](#setup-live-reload).
+
+### Properties
+
+- `paths` - A list of relative or absolute paths to directories where should be watched `includes`.\
+The watching path for each template defined in the entry will be autodetect as the first level subdirectory of the template relative to the project's root path.
+E.g., the template `./src/views/index.html` has the watching path of `./src`.
+
+- `includes` - Watch the files specified in `paths`, except `excludes`, that match the regular expressions.
+Defaults, are watched only files that match the [`test`](#option-test) plugin option.
+
+- `excludes` - Exclude the specified paths or files, that match the regular expressions.
+
+This options does not override the default values, but extends them.
+
+For example, all source files are in the `./src` directory,
+while some partials included in a template are in `./vendor/` directory, then add it to the `paths`:
+
+```js
+watchFiles: {
+  paths: ['vendor'],
+},
+```
+
+If you want watch changes in some special files used in your template that are only loaded through the template engine,
+add them to the `includes` property:
+
+```js
+watchFiles: {
+  paths: ['vendor'],
+  includes: [
+    /data\.(js|json)$/,
+  ],
+},
+```
+
+To exclude watching of files defined in `paths` and `includes`, you can use the `excludes` option.
+This option has the priority over paths and files.
+
+> :::info
+>
+> To display all watched files, enable the [`verbose`](#option-verbose) option.

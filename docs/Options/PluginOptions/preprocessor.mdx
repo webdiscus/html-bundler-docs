@@ -1,0 +1,127 @@
+---
+sidebar_position: 130
+slug: /plugin-options-preprocessor
+title: preprocessor
+tags: [HTML, template, preprocessor, callback]
+---
+
+# Processing templates
+
+Option: `preprocessor`
+
+
+```ts
+type Preprocessor = TemplateEngine | PreprocessorFn | false;
+```
+
+Specifies the built-in templating engine identifier, custom processing function, or disables template processing.
+
+**Valid values**:
+
+- `TemplateEngine`: Built-in template engine identifier.
+- `PreprocessorFn`: Custom processing function.
+- `false`: Disables template processing entirely.
+
+## Default Configuration
+
+The default preprocessor uses Eta templating engine:
+
+```js
+const { Eta } = require("eta");
+const eta = new Eta({
+  async: false,
+  useWith: true,
+  views: process.cwd(),
+});
+preprocessor = (content, { data }) => eta.renderString(content, data);
+```
+
+## Template Engines
+
+```ts
+type TemplateEngine = 'eta' | 'ejs' | 'handlebars' | 'nunjucks' | 'pug' | 'twig';
+```
+
+Supported engines use default configurations unless overridden in [`preprocessorOptions`](/plugin-options-preprocessorOptions).
+
+## Custom Processing Function
+
+```ts
+type PreprocessorFn = (
+  content: string,
+  loaderContext: LoaderContext<object> & {
+    data: { [key: string]: any; } | string;
+  },
+) => string | Promise<any> | undefined;
+```
+
+**Parameters**:
+
+- `content`: Raw template content (string).
+- [`loaderContext`](https://webpack.js.org/api/loaders/#the-loader-context):
+  - `mode`: Webpack build mode (`production`/`development`/`none`).
+  - `rootContext`: Webpack context path.
+  - `resource`: Template file URL with query parameters.
+  - `resourcePath`: Absolute template file path.
+  - `data`: Custom template data (object or string).
+
+**Returns**:
+
+- `string`: Synchronously processed content.
+- `Promise`: Asynchronously processed content.
+- `undefined`: Leaves original content unchanged.
+
+**Synchronous Processing Example**:
+
+```js
+{
+  preprocessor: (content, { data }) => renderSync(content, data),
+}
+```
+
+**Asynchronous Processing Example**:
+
+```js
+{
+  preprocessor: (content, { data }) =>
+    new Promise((resolve) => {
+      const result = renderAsync(content, data);
+      resolve(result);
+    }),
+}
+```
+
+**Disable Processing**:
+
+```js
+{
+  preprocessor: false, // Only updates resource paths
+}
+```
+
+## Related Resources
+
+- [Webpack Loader Context][webpack-loader-context-url]
+- [Webpack Mode][webpack-mode-url]
+- Templating Engine Docs:
+  - [Eta][eta-url]
+  - [EJS][ejs-url]
+  - [Handlebars][handlebars-url]
+  - [Nunjucks][nunjucks-url]
+  - [LiquidJS][liquidjs-url]
+  - [Mustache][mustache-url]
+---
+
+> :::info
+> The `preprocessor` option is the reference to `loaderOptions.preprocessor`.\
+> The `preprocessorOptions` option is the reference to `loaderOptions.preprocessorOptions`.
+
+
+[ejs-url]: https://ejs.co
+[eta-url]: https://eta.js.org
+[handlebars-url]: https://handlebarsjs.com
+[liquidjs-url]: https://github.com/harttle/liquidjs
+[mustache-url]: https://github.com/janl/mustache.js
+[nunjucks-url]: https://mozilla.github.io/nunjucks/
+[webpack-loader-context-url]: https://webpack.js.org/api/loaders/#the-loader-context
+[webpack-mode-url]: https://webpack.js.org/configuration/mode/

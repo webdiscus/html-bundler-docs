@@ -1,0 +1,105 @@
+---
+sidebar_position: 2
+---
+
+# EJS
+
+Link: [EJS](https://ejs.co)
+
+You need to install the `ejs` package:
+
+```
+npm i -D ejs
+```
+
+## `preprocessor: 'ejs'`
+
+For example, there is the template _src/views/page/index.ejs_
+
+```html
+<html>
+  <body>
+    <h1><%= headline %></h1>
+    <ul class="people">
+      <% for (let i = 0; i < people.length; i++) {%>
+      <li><%= people[i] %></li>
+      <% } %>
+    </ul>
+    <%- include('/src/views/partials/footer.html'); %>
+  </body>
+</html>
+```
+
+Define the `preprocessor` as `ejs`:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: {
+          // output dist/index.html
+          import: './src/views/page/index.ejs',
+          data: {
+            headline: 'Breaking Bad',
+            people: ['Walter White', 'Jesse Pinkman'],
+          },
+        },
+      },
+      preprocessor: 'ejs', // use EJS templating engine
+      // preprocessorOptions: {...},
+    }),
+  ],
+};
+```
+
+## `preprocessorOptions`
+
+```js
+{
+  async: false, // defaults 'false'
+  // defaults process.cwd(), root path for includes with an absolute path (e.g., /file.html)
+  root: path.join(__dirname, 'src/views/'), // defaults process.cwd()
+  // defaults [], an array of paths to use when resolving includes with relative paths
+  views: [
+    'src/views/includes', // relative path
+    path.join(__dirname, 'src/views/partials'), // absolute path
+  ],
+},
+```
+
+For the complete list of options see [here](https://ejs.co/#docs).
+
+For example, there are template page and partials:
+
+```
+src/views/
+├── page/
+│   └── home.html
+├── includes/
+│   ├── gallery.html
+│   └── teaser.html
+├── partials/
+│   ├── footer.html
+│   └── menu/
+│       ├── nav.html
+│       └── top/
+│           └── desktop.html
+```
+
+Include the partials in the `src/views/page/home.html` template with the `include()`:
+
+```html
+<!-- root path -->
+<%- include('/includes/gallery.html') %>
+
+<!-- views paths -->
+<%- include('menu/top/desktop.html') %>
+<%- include('menu/nav.html') %>
+<%- include('teaser.html') %>
+<%- include('footer.html') %>
+```
+
+If you have partials with `.ejs` extensions, then the extension can be omitted.

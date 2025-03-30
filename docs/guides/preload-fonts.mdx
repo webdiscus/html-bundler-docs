@@ -1,0 +1,116 @@
+---
+sidebar_position: 2
+---
+
+# Preload fonts
+
+To preload resources such as fonts, use the [preload](#option-preload) plugin option.
+
+For example, there is the style used a font that should be preloaded:
+
+_styles.scss_
+
+```scss
+@font-face {
+  font-family: 'Monaco';
+  // load source fonts using the `@fonts` Webpack alias to the font directory
+  src:
+    local(Monaco Regular),
+    url('@fonts/monaco.woff2') format('woff2'),
+    url('@fonts/monaco.woff') format('woff');
+}
+
+body {
+  font-family: 'Monaco', serif;
+}
+```
+
+The template _index.html_ where is loaded the source style:
+
+```html
+<html>
+  <head>
+    <title>Demo</title>
+    <!-- include source style -->
+    <link href="./style.scss" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>
+```
+
+Use the minimal Webpack config:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  resolve: {
+    alias: {
+      // Alias to the font directory
+      '@fonts': path.join(__dirname, 'src/assets/fonts/'),
+    },
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: 'src/views/index.html',
+      },
+      css: {
+        filename: 'css/[name].[contenthash:8].css',
+      },
+      preload: [
+        {
+          // Preload matched fonts
+          test: /\.(woff2?)$/,
+          attributes: { as: 'font' },
+        },
+      ],
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(s?css|sass)$/,
+        use: ['css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(woff2?)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
+        },
+      },
+    ],
+  },
+};
+```
+
+> :::note
+>
+> Font preloading requires the `crossorigin` attribute to be set.
+> See [font preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload#what_types_of_content_can_be_preloaded).
+
+The generated HTML contains the preload tag with the font:
+
+```html
+<html>
+  <head>
+    <title>Demo</title>
+    <!-- preload fonts detected in style -->
+    <link rel="preload" href="fonts/monaco.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fonts/monaco.woff" as="font" type="font/woff" crossorigin />
+    <!-- compiled style -->
+    <link href="css/style.1f4faaff.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>
+```
+
+> :::note
+>
+> You don't need a plugin to copy files from source directory to public.
+> All source fonts will be coped to output directory automatically.

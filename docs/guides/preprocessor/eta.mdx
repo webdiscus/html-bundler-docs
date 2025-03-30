@@ -1,0 +1,111 @@
+---
+sidebar_position: 1
+---
+
+# Eta
+
+Link: [Eta](https://eta.js.org)
+
+_Supported "out of the box"_
+
+## `preprocessor: 'eta'` (default)
+
+The default preprocessor `eta` can be omitted:
+
+```js
+new HtmlBundlerPlugin({
+  entry: {
+    index: './src/views/page/index.eta',
+  },
+  // preprocessor: 'eta', // Default template engine
+  // preprocessorOptions: {...},
+});
+```
+
+`Eta` is [compatible\*](#eta-compatibility-with-ejs) with `EJS` syntax, is smaller and faster than `EJS`.
+
+For example, there is the template _src/views/page/index.eta_
+
+```html
+<html>
+  <body>
+    <h1><%= headline %></h1>
+    <ul class="people">
+      <% for (let i = 0; i < people.length; i++) {%>
+      <li><%= people[i] %></li>
+      <% } %>
+    </ul>
+    <%~ include('/src/views/partials/footer') %>
+  </body>
+</html>
+```
+
+The minimal Webpack config:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: {
+          import: './src/views/page/index.eta', // Output dist/index.html
+          data: {
+            headline: 'Breaking Bad',
+            people: ['Walter White', 'Jesse Pinkman'],
+          },
+        },
+      },
+    }),
+  ],
+};
+```
+
+
+> :::warning
+>
+> For compatibility the Eta compiler with the EJS templates, the default preprocessor use the `useWith: true` Eta option
+> to use variables in template without the Eta-specific `it.` scope.
+
+## `preprocessorOptions`
+
+```js
+{
+  async: false, // defaults 'false', when is 'true' then must be used `await includeAsync()`
+  useWith: true, // defaults 'true', use variables in template without `it.` scope
+  views: 'src/views', // relative path to directory that contains templates
+  // views: path.join(__dirname, 'src/views'), // absolute path to directory that contains templates
+},
+```
+
+For the complete list of options see [here](https://eta.js.org/docs/api/configuration).
+
+For example, there are a template page and partials:
+
+```
+src/views/
+│── page/
+│   └── home.html
+│── includes/
+│   ├── gallery.html
+│   └── teaser.html
+│── partials/
+│   ├── footer.html
+│   └── menu/
+│       ├── nav.html
+│       └── top/
+│           └── desktop.html
+
+```
+
+Include the partials in the `src/views/page/home.html` template with the `include()`:
+
+```html
+<%~ include('teaser.html') %>
+<%~ include('menu/nav.html') %>
+<%~ include('menu/top/desktop.html') %>
+<%~ include('footer.html') %>
+```
+
+If partials have `.eta` extensions, then the extension can be omitted in the include argument.

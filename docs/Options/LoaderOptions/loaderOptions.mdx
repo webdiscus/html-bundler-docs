@@ -1,0 +1,113 @@
+---
+sidebar_position: 1
+title: loaderOptions
+---
+
+# Loader Options
+
+Option: `loaderOptions`
+
+This option allow to define special options for build-in template loader.
+
+To handle templates you don't need define a loader.
+The plugin configures it with default options automatically.
+
+
+The default build-in template loader will be automatically added in `module.rules`:
+
+```js
+{
+  test: /\.(html|eta)$/,
+  loader: HtmlBundlerPlugin.loader,
+}
+```
+
+> :::warning
+>
+> The plugin works only with the build-in `HtmlBundlerPlugin.loader`.
+> This loader replaces the functionality of `html-loader` and many other template loaders such as `handlebars-loader`, `nunjucks-loader`, `pug-loader`, etc.
+
+For example, following configurations are functionally identical:
+
+1) The variant using plugin option aliases to loader options. It's **recommended** for common use cases:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: 'src/views/index.ejs',
+      },
+      preprocessor: 'ejs', // Use EJS template engine
+      preprocessorOptions: {
+        views: [path.join(__dirname, 'src/views')],
+      },
+      loaderOptions: {
+        root: path.join(__dirname, 'src'),
+      }
+    }),
+  ],
+};
+```
+
+2) The variant using the `loaderOptions` object as alias to `module.rules[].options`:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: 'src/views/index.ejs',
+      },
+      loaderOptions: {
+        preprocessor: 'ejs', // Use EJS template engine
+        preprocessorOptions: {
+          views: [path.join(__dirname, 'src/views')],
+        },
+        root: path.join(__dirname, 'src'),
+      },
+    }),
+  ],
+};
+```
+
+3) The `low level` variant using the `module.rules`:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: 'src/views/index.ejs',
+      },
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /.(html|ejs)$/,
+        loader: HtmlBundlerPlugin.loader, // Template loader
+        options: {
+          preprocessor: 'ejs', // Use EJS template engine
+          preprocessorOptions: {
+            views: [path.join(__dirname, 'src/views')],
+          },
+          root: path.join(__dirname, 'src'),
+        },
+      },
+    ],
+  },
+};
+```
+
+> :::caution
+>
+> If you're unsure why you need this, don't define a rule for templates.
+> The plugin configures it automatically.
+
+> :::info
+>
+> Options defined in `module.rules` take precedence over the same options defined in `loaderOptions`.

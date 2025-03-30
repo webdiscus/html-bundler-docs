@@ -1,0 +1,45 @@
+---
+sidebar_position: 190
+slug: /plugin-options-minify
+title: minify
+tags: [HTML, minify]
+---
+
+# Minify output HTML
+
+Option: `minify`
+
+Type: `'auto'|boolean|Object` Default: `false`
+
+For minification generated HTML is used the [html-minifier-terser](https://github.com/terser/html-minifier-terser) with the following `default options`:
+
+```js
+{
+  collapseWhitespace: true,
+  keepClosingSlash: true,
+  removeComments: true,
+  removeRedundantAttributes: false, // prevents styling bug when input "type=text" is removed
+  removeScriptTypeAttributes: true,
+  removeStyleLinkTypeAttributes: true,
+  useShortDoctype: true,
+  minifyCSS: true,
+  minifyJS: true,
+}
+```
+
+Possible values:
+
+- `false` - disable minification
+- `true` - enable minification with default options
+- `'auto'` - in `development` mode disable minification, in `production` mode enable minification with default options,
+use [minifyOptions](#option-minify-options) to customize options
+- `{}` - enable minification with custom options, this object are merged with `default options`\
+see [options reference](https://github.com/terser/html-minifier-terser#options-quick-reference)
+
+<a id="option-minify-options" name="option-minify-options"></a>
+
+### `minifyOptions`
+
+Type: `Object` Default: `null`
+
+When the `minify` option is set to `'auto'` or `true`, you can configure [minification options](https://github.com/terser/html-minifier-terser) using the `minifyOptions`.

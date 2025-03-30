@@ -1,0 +1,39 @@
+---
+sidebar_position: 150
+slug: /plugin-options-beforeEmit
+title: beforeEmit
+tags: [HTML, template, beforeEmit, callback]
+---
+
+# Callback beforeEmit
+
+Option: `beforeEmit`
+
+Type:
+
+```ts
+type BeforeEmit = (
+  content: string,
+  entry: CompileEntry,
+  compilation: Compilation
+) => string | undefined;
+
+type CompileEntry = TemplateInfo & {
+  // assets used in html
+  assets: Array<CompileAsset>;
+};
+```
+
+Default: `null`
+
+Called at the latest stage of the [processAssets](https://webpack.js.org/api/compilation-hooks/#processassets) hook, before emitting.
+This is the latest stage where you can change the HTML before it will be saved on the disk.
+
+Callback parameters:
+- `content: string` - the final version html content
+- `entry: CompileEntry` the information about the entry containing all dependent assets,\
+the description of the `TemplateInfo` see by [postprocess](#option-postprocess)
+- `compilation: Compilation` - the Webpack [compilation object](https://webpack.js.org/api/compilation-object/)
+
+Return new content as a `string`.
+If return `undefined` then content will not be changed.

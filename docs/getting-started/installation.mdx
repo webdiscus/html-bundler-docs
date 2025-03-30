@@ -1,0 +1,70 @@
+---
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Installation
+
+## Requirements
+
+- [Node.js][node-url] >= 18
+- [Webpack][webpack-url] >= 5.81.0 (recommend 5.96+ for supporting all features)
+
+## Install
+
+Install the plugin using your favorite package manager:
+
+<Tabs groupId="tools">
+  <TabItem value="npm" label="npm">
+    ```bash
+    npm install --save-dev html-bundler-webpack-plugin
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+    ```bash
+    yarn add --dev html-bundler-webpack-plugin
+    ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+    ```bash
+    pnpm add --save-dev html-bundler-webpack-plugin
+    ```
+  </TabItem>
+</Tabs>
+
+
+## Known Webpack loaders/plugins
+
+### Recommended loaders
+
+| Resources | Packages                             | Notes                   |
+| --------- | ------------------------------------ | ----------------------- |
+| JS/TS     | [babel-loader][babel-loader-url]     | Optional                |
+| JS/TS     | [swc-loader][swc-loader-url]         | Optional                |
+| CSS       | [css-loader][css-loader-url]         | Required for CSS styles |
+| CSS       | [postcss-loader][postcss-loader-url] | Optional                |
+| SASS/SCSS | [sass][sass-url], [sass-loader][sass-loader-url]       | Required for SASS/SCSS  |
+
+### Recommended optimization plugins
+
+| Resources | Package                                                               | Notes    |
+| --------- | -------------------------------------------------------------------- | -------- |
+| JS        | [terser-webpack-plugin][terser-webpack-plugin-url]                   | Optional |
+| JS        | [swc-minify-webpack-plugin][swc-minify-webpack-plugin-url]           | Optional |
+| HTML      | [html-minimizer-webpack-plugin][html-minimizer-webpack-plugin-url]   | Optional |
+| Images    | [image-minimizer-webpack-plugin][image-minimizer-webpack-plugin-url] | Optional |
+
+[node-url]: https://nodejs.org/
+[webpack-url]: https://webpack.js.org/
+[babel-loader-url]: https://github.com/babel/babel-loader
+[css-loader-url]: https://github.com/webpack-contrib/css-loader
+[html-minimizer-webpack-plugin-url]: https://github.com/webpack-contrib/html-minimizer-webpack-plugin
+[image-minimizer-webpack-plugin-url]: https://github.com/webpack-contrib/image-minimizer-webpack-plugin
+[postcss-loader-url]: https://github.com/webpack-contrib/postcss-loader
+[sass-url]: https://github.com/sass/dart-sass
+[sass-loader-url]: https://github.com/webpack-contrib/sass-loader
+[swc-loader-url]: https://swc.rs/docs/usage/swc-loader
+[swc-minify-webpack-plugin-url]: https://github.com/guoyunhe/swc-minify-webpack-plugin
+[terser-webpack-plugin-url]: https://github.com/webpack-contrib/terser-webpack-plugin

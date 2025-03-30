@@ -1,0 +1,29 @@
+---
+sidebar_position: 1
+title: Live Reload
+---
+
+# Setup Live Reload
+
+To enable reloading of the browser after changes, add the `devServer` option to the Webpack config:
+
+```js
+module.exports = {
+  // enable live reload
+  devServer: {
+    static: path.join(__dirname, 'dist'),
+    watchFiles: {
+      paths: ['src/**/*.*'],
+      options: {
+        usePolling: true,
+      },
+    },
+  },
+};
+```
+
+> :::warning
+>
+> If you don't have a referenced source script file in HTML, then set the [hotUpdate](#option-hot-update) option to `true` to enable live reload.
+> Besides, the `devServer.hot` must be `true` (defaults).
+>

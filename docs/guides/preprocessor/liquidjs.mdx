@@ -1,0 +1,56 @@
+---
+sidebar_position: 2
+---
+
+# LiquidJS
+
+Link: [LiquidJS](https://github.com/harttle/liquidjs)
+
+You need to install the `liquidjs` package:
+
+```
+npm i -D liquidjs
+```
+
+For example, there is the template _src/views/page/index.liquid_
+
+```html
+<html>
+  <body>
+    <h1>{{ headline }}!</h1>
+    <ul class="people">
+      {% for name in people %}
+      <li class="name">{{ name }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
+```
+
+Add the template compiler to `preprocessor`:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+const { Liquid } = require('liquidjs');
+
+const LiquidEngine = new Liquid();
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      test: /\.(html|liquid)$/, // add this option to match *.liquid files in entry
+      entry: {
+        index: {
+          import: './src/views/page/index.liquid',
+          data: {
+            headline: 'Breaking Bad',
+            people: ['Walter White', 'Jesse Pinkman'],
+          },
+        },
+      },
+      // async parseAndRender method return the promise
+      preprocessor: (content, { data }) => LiquidEngine.parseAndRender(content, data),
+    }),
+  ],
+};
+```

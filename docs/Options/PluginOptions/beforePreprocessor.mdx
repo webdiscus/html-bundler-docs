@@ -1,0 +1,56 @@
+---
+sidebar_position: 120
+slug: /plugin-options-beforePreprocessor
+title: beforePreprocessor
+tags: [HTML, template, beforePreprocessor, callback]
+---
+
+# Callback before preprocessor
+
+Option: `beforePreprocessor`
+
+Type:
+
+```ts
+type BeforePreprocessor =
+  | false
+  | ((
+      content: string,
+      loaderContext: LoaderContext<Object> & { data: { [key: string]: any } | string }
+    ) => string | undefined);
+```
+
+Default: `false`
+
+Teh arguments:
+
+- `content` - the raw content of a template.
+- `loaderContext` - see in the [Webpack documentation](https://webpack.js.org/api/loaders/#thisresourcepath).
+
+Returns the modified template. If you are not changing the template, you should return `undefined` or not use `return` at all.
+
+The callback function called right before the [preprocessor](#loader-option-preprocessor).
+This can be useful when using one of the predefined preprocessors and modifying the raw template or the data passed to the template.
+
+For example:
+
+```js
+new HtmlBundlerPlugin({
+  entry: {
+    index: 'src/views/pages/',
+  },
+  data: {
+    title: 'Welcome to [sitename] website',
+  },
+  beforePreprocessor: (content, { resourcePath, data }) => {
+    let sitename = 'Homepage';
+    if (resourcePath.includes('/about.html')) sitename = 'About';
+    data.title = data.title.replace('[sitename]', sitename); // modify template data
+    return content.replaceAll('{{old_var}}', '{{new_var}}'); // modify template content
+  },
+  preprocessor: 'handlebars', // use the templating engine
+});
+```
+
+> :::info
+> This option is the reference to `loaderOptions.beforePreprocessor`.

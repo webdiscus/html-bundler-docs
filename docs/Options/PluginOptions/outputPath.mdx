@@ -1,0 +1,95 @@
+---
+sidebar_position: 92
+slug: /plugin-options-outputPath
+title: outputPath
+tags: [HTML, output, outputPath]
+---
+
+# Output path
+
+Option: `outputPath`
+
+**Type**: `string`
+
+**Default**: Webpack [`output.path`][webpack-output.path-url] configuration.
+
+Specifies the output directory for HTML files.
+
+**Possible values**:
+
+- Absolute path to output directory.
+- Relative path to Webpack `output.path` configuration.
+
+## Example
+
+**Source file structure**:
+
+```text
+src/index.html
+src/main.js
+```
+
+**Source HTML file** _src/index.html_:
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <script src="./main.js"></script>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>
+```
+
+**Webpack Configuration**:
+
+```js
+const path = require('path');
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  output: {
+    path: path.join(__dirname, 'dist/'), // Root output directory for all assets
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      // Absolute HTML output directory
+      outputPath: path.join(__dirname, 'dist/example/'),
+      // OR relative to `output.path`:
+      // outputPath: 'example/',
+      entry: {
+        index: './src/index.html', // Output: dist/example/index.html
+      },
+      js: {
+        filename: '[name].bundle.js',
+        outputPath: 'assets/js/', // JS output path relative to output.path
+      },
+    }),
+  ],
+};
+```
+
+**Processed output file structure**:
+
+```text
+dist/example/index.html
+dist/assets/js/main.bundle.js
+```
+
+**Generated HTML file** _dist/example/index.html_:
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <script src="../assets/js/main.bundle.js"></script>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>
+```
+
+[webpack-output.path-url]: https://webpack.js.org/configuration/output/#outputpath

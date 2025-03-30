@@ -1,0 +1,22 @@
+---
+sidebar_position: 220
+slug: /plugin-options-hotUpdate
+title: hotUpdate
+---
+
+# hotUpdate
+
+Option: `hotUpdate`
+
+Type: `boolean` Default: `false`
+
+If the value is `true`, then in the `serve` or `watch` mode, the `hot-update.js` file is injected into each generated HTML file to enable the live reloading.
+Use this options only if you don't have a referenced source file of a script in template.
+
+> :::note
+>
+> The `devServer.hot` must be `true`.
+
+If you already have a JS file in HTML, this setting should be `false` as Webpack automatically injects the hot update code into the compiled JS file.
+
+Also see [Setup Live Reload](#setup-live-reload).

@@ -1,0 +1,217 @@
+---
+sidebar_position: 80
+slug: /plugin-options-sources
+title: sources
+tags: [HTML, source, resolve, template]
+---
+
+# Resolve source files in template
+
+Option: `sources`
+
+Type:
+
+```ts
+type Sources =
+  | boolean
+  | Array<{
+      tag?: string;
+      attributes?: Array<string>;
+      filter?: (props: {
+        tag: string;
+        attribute: string;
+        value: string;
+        parsedValue: Array<string>;
+        attributes: { [attributeName: string]: string };
+        resourcePath: string;
+      }) => boolean | void;
+    }>;
+```
+
+Default: `true`
+
+The `sources` option allow to specify a tag attribute that should be resolved.
+
+<a id="loader-option-sources-default" name="loader-option-sources-default"></a>
+
+### Default attributes
+
+By default, resolves source files in the following tags and attributes:
+
+| Tag      | Attributes                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------ |
+| `link`   | `href` for `type="text/css"`, `rel="stylesheet"`, `as="style"`, `as="script"`<br />`imagesrcset` for `as="image"` |
+| `script` | `src`                                                                                                        |
+| `img`    | `src` `srcset`                                                                                               |
+| `image`  | `href` `xlink:href`                                                                                          |
+| `use`    | `href` `xlink:href`                                                                                          |
+| `input`  | `src` (for `type="image"`)                                                                                   |
+| `source` | `src` `srcset`                                                                                               |
+| `audio`  | `src`                                                                                                        |
+| `track`  | `src`                                                                                                        |
+| `video`  | `src` `poster`                                                                                               |
+| `object` | `data`                                                                                                       |
+
+> :::warning
+>
+> It is not recommended to use the [deprecated](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/xlink:href) `xlink:href` attribute by the `image` and `use` tags.
+
+> :::note
+>
+> Automatically are processed only attributes containing a relative path or Webpack alias:
+>
+> - `src="./image.png"` or `src="image.png"` - an asset in the local directory
+> - `src="../../assets/image.png"` - a relative path to parent directory
+> - `src="@images/image.png"` - an image directory as Webpack alias
+>
+> Url values are not processed:
+>
+> - `src="https://example.com/img/image.png"`
+> - `src="//example.com/img/image.png"`
+> - `src="/img/image.png"` (not processed only if not defined the [`root` option](/loader-options-root))
+>
+> Others not filename values are ignored, e.g.:
+>
+> - `src="data:image/png; ..."`
+> - `src="javascript: ..."`
+
+
+### `filter` function
+
+Using the `filter` function, you can enable/disable resolving of specific assets by tags and attributes.
+
+The `filter` is called for all attributes of the tag defined as defaults and in `sources` option.
+The argument is an object containing the properties:
+
+- `tag: string` - a name of the HTML tag
+- `attribute: string` - a name of the HTML attribute
+- `value: string` - an original value of the HTML attribute
+- `parsedValue: Array<string>` - an array of filenames w/o URL query, parsed in the value\
+it's useful for the `srcset` attribute containing many image files, e.g.:
+ ```html
+ <img src="image.png?size=800" srcset="image1.png?size=200 200w, image2.png 400w">
+   ```
+the `parsedValue` for the `src` is `['image.png']`, the array with one parsed filename\
+the `parsedValue` for the `srcset` is `['image1.png', 'image2.png']`
+- `attributes: { [attributeName: string]: string }` - all attributes of the tag
+- `resourcePath: string` - a path of the HTML template
+
+The processing of an attribute can be ignored by returning `false`.
+
+To disable the processing of all attributes, set the `sources` option as `false`.
+
+Examples of using argument properties:
+
+```js
+{
+  tag: 'img',
+  // use the destructuring of variables from the object argument
+  filter: ({ tag, attribute, value, attributes, resourcePath }) => {
+    if (attribute === 'src') return false;
+    if (value.endsWith('.webp')) return false;
+    if ('srcset' in attributes && attributes['srcset'] === '') return false;
+    if (resourcePath.includes('example')) return false;
+    // otherwise return 'true' or nothing (undefined) to allow the processing
+  },
+}
+```
+
+The default sources can be extended with new tags and attributes.
+
+For example, enable the processing for the non-standard `data-src` and `data-srcset` attributes in the `img` tag:
+
+```js
+new HtmlBundlerPlugin({
+  entry: {
+    index: 'src/views/index.html',
+  },
+  loaderOptions: {
+    sources: [
+      {
+        tag: 'img',
+        attributes: ['data-src', 'data-srcset'],
+      },
+    ],
+  },
+});
+```
+
+You can use the `filter` function to allow the processing only specific attributes.
+
+The `filter` function must return `true` or `undefined` to enable the processing of specified tag attributes.
+Return `false` to disable the processing.
+
+For example, allow processing only for images in `content` attribute of the `meta` tag:
+
+```html
+<html>
+  <head>
+    <!-- ignore the 'content' attribute via filter -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content="Fruits" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:video:type" content="video/mp4" />
+
+    <!-- resolve the 'content' attribute via filter  -->
+    <meta property="og:image" content="./fruits.png" />
+    <meta property="og:video" content="./video.mp4" />
+  </head>
+  <body>
+    <!-- resolve standard 'src' attribute -->
+    <img src="./image.png" />
+  </body>
+</html>
+```
+
+Use the `filter` function:
+
+```js
+new HtmlBundlerPlugin({
+  entry: {
+    index: 'src/views/index.html',
+  },
+  loaderOptions: {
+    sources: [
+      {
+        tag: 'meta',
+        attributes: ['content'],
+        // allow to handle an image in the 'content' attribute of the 'meta' tag
+        // when the 'property' attribute contains one of: 'og:image', 'og:video'
+        filter: ({ attributes }) => {
+          const attrName = 'property';
+          const attrValues = ['og:image', 'og:video']; // allowed values of the property
+          if (!attributes[attrName] || attrValues.indexOf(attributes[attrName]) < 0) {
+            return false; // return false to disable processing
+          }
+          // return true or undefined to enable processing
+        },
+      },
+    ],
+  },
+});
+```
+
+The filter can disable an attribute of a tag.
+
+For example, disable the processing of default attribute `srcset` of the `img` tag:
+
+```js
+new HtmlBundlerPlugin({
+  entry: {
+    index: 'src/views/index.html',
+  },
+  loaderOptions: {
+    sources: [
+      {
+        tag: 'img',
+        filter: ({ attribute }) => attribute !== 'srcset',
+      },
+    ],
+  },
+});
+```
+
+See also an example of using the `filter` function: [How to resolve source image in `<a href="image.jpg">`](#recipe-resolve-attr-href-a-image).
+
+> :::info
+> This option is the reference to `loaderOptions.sources`.

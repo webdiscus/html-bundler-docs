@@ -1,0 +1,96 @@
+---
+sidebar_position: 99
+---
+
+# Template function in JavaScript
+
+The [preprocessor](#loader-option-preprocessor) works in two modes: `render` and `compile`.
+
+## Render mode
+
+The `render` is the default mode for the template defined in the [entry](#option-entry) option.
+The rendered template is an HTML string, which is saved as an HTML file.
+
+You can import the template file as a generated HTML string in JS using the `?render` query.
+To pass simple variables into the imported template you can use query parameters, e.g.: `?render&name=Arnold&age=25`.
+To pass complex variables such as an array or an object use the global [data](#option-data) option.
+
+> :::info
+>
+> At runtime in JavaScript will be used the already rendered HTML from the template.
+
+For example:
+
+```js
+import html from './partials/star-button.html?render&buttonText=Star';
+
+document.getElementById('star-button').innerHTML = html;
+```
+
+_./partials/star-button.html_
+```html
+<button class="btn-star">
+  <!-- you can use a source image file with webpack alias,
+       in the bundle it will be auto replaced with the output asset filename -->
+  <img src="@images/star.svg">
+  <!-- the `buttonText` variable is passed via query -->
+  <span><%= buttonText %></span>
+</button>
+```
+
+## Compile mode
+
+The `compile` is the default mode for the template imported in JavaScript file.
+The compiled template is a template function,
+which can be executed with passed variables in the runtime on the client-side in the browser.
+
+For example:
+
+```js
+import tmpl from './partials/people.ejs';
+
+// template variables
+const locals = {
+  people: [
+    'Walter White',
+    'Jesse Pinkman',
+  ],
+};
+
+// render template function with variables in browser
+document.getElementById('people').innerHTML = tmpl(locals);
+```
+
+_./partials/people.ejs_
+```html
+<!-- you can use a source image file with webpack alias,
+     in the bundle it will be auto replaced with the output asset filename -->
+<img src="@images/people.png">
+<ul class="people">
+  <% for (let i = 0; i < people.length; i++) {%>
+  <li><%= people[i] %></li>
+  <% } %>
+</ul>
+```
+
+> :::warning
+>
+> Not all template engines can generate a template function that can be executed with local variables at runtime.
+
+#### Template engines that do support the `template function` on client-side
+
+- [eta](#loader-option-preprocessor-options-eta) - generates a template function with runtime (~3KB)\
+`include` is supported
+- [ejs](#loader-option-preprocessor-options-ejs) - generates a fast smallest pure template function w/o runtime (**recommended** for use on client-side)\
+`include` is supported
+- [handlebars](#loader-option-preprocessor-options-handlebars) - generates a precompiled template with runtime (~18KB)\
+`include` is supported
+- [nunjucks](#loader-option-preprocessor-options-nunjucks) - generates a precompiled template with runtime (~41KB)\
+`include` is supported
+- [twig](#loader-option-preprocessor-options-nunjucks) - generates a precompiled template with runtime (~110KB)\
+`include` is supported
+- [pug](#loader-option-preprocessor-options-pug) - generates a small pure template function
+
+#### Template engines that do NOT support the `template function` on client-side
+
+- LiquidJS

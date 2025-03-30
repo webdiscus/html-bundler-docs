@@ -1,0 +1,183 @@
+---
+sidebar_position: 8
+---
+
+# Provide external data in template
+
+You can pass variables into template using a template engine, e.g. [Handlebars](https://handlebarsjs.com).
+For multiple page configuration, better to use the [Nunjucks](https://mozilla.github.io/nunjucks) template engine maintained by Mozilla.
+
+For example, you have several pages with variables.\
+Both pages have the same layout _src/views/layouts/default.html_
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <!-- block for specific page styles -->
+    {% block styles %}{% endblock %}
+    <!-- block for specific page scripts -->
+    {% block scripts %}{% endblock %}
+  </head>
+  <body>
+    <main class="main-content">
+      <!-- block for specific page content -->
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
+```
+
+_src/views/pages/home/index.html_
+
+```html
+{% extends "src/views/layouts/default.html" %} {% block styles %}
+<!-- include source style -->
+<link href="./home.scss" rel="stylesheet" />
+{% endblock %} {% block scripts %}
+<!-- include source script -->
+<script src="./home.js" defer="defer"></script>
+{% endblock %} {% block content %}
+<h1>{{ filmTitle }}</h1>
+<p>Location: {{ location }}</p>
+<!-- @images is the Webpack alias for the source images directory -->
+<img src="@images/{{ imageFile }}" />
+{% endblock %}
+```
+
+_src/views/pages/about/index.html_
+
+```html
+{% extends "src/views/layouts/default.html" %} {% block styles %}
+<link href="./about.scss" rel="stylesheet" />
+{% endblock %} {% block scripts %}
+<script src="./about.js" defer="defer"></script>
+{% endblock %} {% block content %}
+<h1>Main characters</h1>
+<ul>
+  {% for item in actors %}
+  <li class="name">{{ item.firstname }} {{ item.lastname }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}
+```
+
+_Webpack config_
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+// External data
+const entryData = {
+  // variables for home page
+  home: {
+    title: 'Home',
+    filmTitle: 'Breaking Bad',
+    location: 'Albuquerque, New Mexico',
+    imageFile: 'picture.png',
+  },
+  // variables for about page
+  about: {
+    title: 'About',
+    actors: [
+      {
+        firstname: 'Walter',
+        lastname: 'White, "Heisenberg"',
+      },
+      {
+        firstname: 'Jesse',
+        lastname: 'Pinkman',
+      },
+    ],
+  },
+};
+
+module.exports = {
+  resolve: {
+    alias: {
+      '@images': path.join(__dirname, 'src/assets/images'),
+    },
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: {
+          import: 'src/views/pages/home/index.html', // => dist/index.html
+          data: entryData.home,
+        },
+        about: {
+          import: 'src/views/pages/about/index.html', // => dist/about.html
+          data: entryData.about,
+        },
+      },
+      js: {
+        filename: 'js/[name].[contenthash:8].js',
+      },
+      css: {
+        filename: 'css/[name].[contenthash:8].css',
+      },
+      // use Nunjucks template engine
+      preprocessor: 'nunjucks',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(s?css|sass|s?css)$/,
+        use: ['css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(png|svg|jpe?g|webp)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/img/[name].[hash:8][ext]',
+        },
+      },
+    ],
+  },
+};
+```
+
+The generated _dist/index.html_
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>Home</title>
+    <link href="css/home.2180238c.css" rel="stylesheet" />
+    <script src="js/home.790d746b.js" defer="defer"></script>
+  </head>
+  <body>
+    <main class="main-content">
+      <h1>Breaking Bad</h1>
+      <p>Breaking Bad is an American crime drama</p>
+      <p>Location: Albuquerque, New Mexico</p>
+      <img src="assets/img/picture.697ef306.png" alt="location" />
+    </main>
+  </body>
+</html>
+```
+
+The generated _dist/about.html_
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>About</title>
+    <link href="css/about.2777c101.css" rel="stylesheet" />
+    <script src="js/about.1.c5e03c0e.js" defer="defer"></script>
+  </head>
+  <body>
+    <main class="main-content">
+      <h1>Main characters</h1>
+      <ul>
+        <li class="name">Walter White, &quot;Heisenberg&quot;</li>
+        <li class="name">Jesse Pinkman</li>
+      </ul>
+    </main>
+  </body>
+</html>
+```

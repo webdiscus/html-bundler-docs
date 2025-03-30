@@ -1,0 +1,21 @@
+---
+sidebar_position: 200
+slug: /plugin-options-extractComments
+title: extractComments
+---
+
+# Extract comments
+
+Option: `extractComments`
+
+Type: `boolean` Default: `false`
+
+Whether comments shall be extracted to a separate file like the `*.LICENSE.txt`.
+
+By default, the built-in Webpack plugin `TerserWebpackPlugin` extracts the license banner from node modules into a separate `*.LICENSE.txt` file,
+although this is usually not necessary.
+
+Therefore, by default, the Bundler Plugin does not allow extracting comments.
+This has the same effect as explicitly defining the `extractComments: false` option of the TerserWebpackPlugin.
+
+If you want to allow extraction of `*.LICENSE.txt` files, set this option to `true`.

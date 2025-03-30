@@ -1,0 +1,61 @@
+---
+sidebar_position: 5
+title: Inline all assets in HTML
+---
+
+# Inline all resources into single HTML file
+
+The bundler plugin can generate a single HTML file included all embedded dependencies
+such as JS, CSS, fonts, images (PNG, SVG, etc..).
+
+The fonts and images used in CSS will be inlined into CSS.
+The generated CSS including inlined images will be inlined into HTML.
+
+Just use the following config:
+
+```js
+const path = require('path');
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  mode: 'production',
+  output: {
+    path: path.join(__dirname, 'dist/'),
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: './src/views/index.html',
+      },
+      css: {
+        inline: true, // inline CSS into HTML
+      },
+      js: {
+        inline: true, // inline JS into HTML
+      },
+      svg: {
+        inline: {
+          // optional: inline SVG in HTML by replacing <img> with <svg>
+          //embed: true,
+        },
+      }
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(css|sass|scss)$/,
+        use: ['css-loader', 'sass-loader'],
+      },
+      // inline all assets: images, svg, fonts
+      {
+        test: /\.(png|jpe?g|webp|svg|woff2?)$/i,
+        type: 'asset/inline',
+      },
+    ],
+  },
+  performance: false, // disable warning max size
+};
+```
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/edit/inline-all-assets-to-html?file=README.md)

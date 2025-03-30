@@ -1,0 +1,338 @@
+---
+sidebar_position: 20
+slug: /plugin-options-entry
+title: entry
+tags: [entry, entrypoint, template]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Entry point
+
+Option: `entry`
+
+**Type**: `string | EntryObject | EntryDescription[]`
+
+**Default**: `[name].html`
+
+Defines HTML templates as entry points for the plugin. These entries are processed to extract resources and generate
+optimized output files. Use this option to configure single templates, directories, or complex multi-page setups.
+
+**Valid values**:
+
+- `string` Template directory reference
+- `EntryObject` Named entry points
+- `EntryDescription[]` Entry collection
+
+## Template Directory Reference
+
+**Type**: `string`
+
+Specifies an absolute/relative path to the directory containing HTML templates.
+
+**Features**:
+
+- Recursively detects files matching [`test`](/plugin-options-test) option.
+- Inherits includes/excludes patterns from [`entryFilter`](/plugin-options-entryFilter)
+- Preserves source directory structure in the output.
+- Simplifies bulk processing configuration.
+
+**Example**:
+
+```js
+// webpack.config.js
+module.exports = {
+  plugins: [
+    new HtmlBundlerWebpackPlugin({
+      entry: 'path/to/templates/', // Processes all matching templates in this directory
+    }),
+  ],
+};
+```
+
+> :::tip
+> You can modify the output HTML filename using the [filename](/plugin-options-filename) option as a function.
+
+**Example**
+
+Keep a source structure for all pages,
+while `./src/views/about/index.html` should be saved as `./dist/about.html`:
+
+<Tabs groupId="templateDirectory">
+  <TabItem value="" label="./src/views/ (source)">
+```text
+./src/views/
+│── index.html
+│── about/
+│   └── index.html
+│── news/
+│   └── sport/
+│       └── index.html
+```
+  </TabItem>
+  <TabItem value="2" label="./dist/ (output)">
+```text
+./dist/
+│── index.html
+│── about.html
+│── news/
+│   └── sport/
+│       └── index.html
+```
+  </TabItem>
+  <TabItem value="3" label="config">
+```js
+new HtmlBundlerPlugin({
+  entry: 'src/views/',
+  filename: ({ filename, chunk: { name } }) => {
+    if (name === 'about/index') {
+      return 'about.html'; // Save as `about.html` to output directory
+    }
+    return '[name].html'; // Bypass the original directory structure
+  },
+});
+```
+  </TabItem>
+</Tabs>
+
+
+## Named Entry Points
+
+```typescript
+type EntryObject = {
+  [name: string]: string | EntryDescription;
+};
+```
+
+**Properties**:
+
+- `name` Output filename (except `.html` extension) relative to [`outputPath`](/plugin-options-outputPath) configuration
+
+**Valid values**:
+
+- `string` Absolute/relative path to the source file.
+- `EntryDescription` Single Entry Configuration
+
+**Source file reference example**:
+
+```js
+// webpack.config.js
+module.exports = {
+  plugins: [
+    new HtmlBundlerWebpackPlugin({
+      entry: {
+        index: 'path/to/home.html', // Output: dist/index.html
+        'subdir/about': 'path/to/about.html', // Output: dist/subdir/about.html
+      },
+    }),
+  ],
+};
+```
+
+> :::tip
+> Use the entry value as the [EntryDescription](#entrydescription) object to specify template variables.
+
+**Advanced entry configuration example**:
+
+```js
+// webpack.config.js
+module.exports = {
+  plugins: [
+    new HtmlBundlerWebpackPlugin({
+      entry: {
+        index: { // Output: dist/index.html
+          import: 'path/to/home.html',
+          data: { title: 'Home Page' },
+        },
+        'subdir/about': { // Output: dist/subdir/about.html
+          import: 'path/to/about.html',
+          data: { title: 'About Page' },
+        },
+      },
+    }),
+  ],
+};
+```
+
+## Entry collection
+
+**Type**: `EntryDescription[]`
+
+Explicit array format for granular control over entries.
+
+**`EntryDescription` Requirements**:
+
+- `import`: Required
+- `filename`: Required
+- `data`: Optional
+
+**Example**:
+
+```js
+// webpack.config.js
+module.exports = {
+  plugins: [
+    new HtmlBundlerWebpackPlugin({
+      entry: [
+        {
+          import: 'path/to/home.html',
+          filename: 'index.html', // Output: dist/index.html
+          data: { title: 'Home Page' },
+        },
+        {
+          import: 'path/to/about.html',
+          filename: 'subdir/about.html', // Output: dist/subdir/about.html
+          data: { title: 'About Page' },
+        },
+      ],
+    }),
+  ],
+};
+```
+
+## `EntryDescription`
+
+```ts
+import type { AssetInfo, PathData } from 'webpack';
+
+type EntryDescription = {
+  import: string;
+  filename?: FilenameTemplate | string;
+  data?: { [key: string]: any; } | string;
+};
+
+type FilenameTemplate = (pathData: PathData, assetInfo?: AssetInfo): string;
+```
+**Properties**:
+
+- `import` Specifies an absolute or relative file path to the source file.
+- `filename` Template-specified output filename. See [`filename`](/plugin-options-filename).
+- `data` Template-specific data configuration.
+
+**Template String Examples**
+
+The `filename` should contains the `[name]` substitution only in the named entry:
+
+```js
+{
+  entry: {
+    'about-us': {
+      import: 'src/views/about.html',
+      filename: 'subdir/[name].html', // Output: dist/subdir/about-us.html
+    },
+  },
+}
+```
+
+If the entry is an array, the `filename` must be a string without substitutions:
+
+```js
+{
+  entry: [
+    {
+      import: 'src/views/about.html',
+      filename: 'subdir/about-us.html', // Output: dist/subdir/about-us.html
+    },
+  ],
+}
+```
+
+**Function Example:**
+
+```js
+{
+  import: 'path/to/template.html',
+  filename: (pathData, assetInfo) => {
+    // Using environment variable
+    if (process.env.PUBLIC_URL === undefined) {
+      return 'index.html';
+    }
+
+    return 'index.[contenthash:8].html';
+  }
+}
+```
+
+## `EntryDescription.data`
+
+**Type:** `object | string`
+
+Template-specific data that override the [global data](/plugin-options-data#data).
+
+**Configuration**:
+
+- `object` Object-based data.
+- `string` File reference data.
+
+**Key Behaviors**:
+
+- **Template-Specific scope**: Data is available in the template only.
+- **Merge Logic**: Template-specific data overrides matching properties in the global data object.
+- **HMR Support**: Webpack detects changes only when data is a file path.
+
+> :::tip
+> Use global [data](/plugin-options-data) option to pass data to all templates.
+
+### `data` as `object`
+
+**Type**: `object`
+
+Directly defines data as a JavaScript object.
+
+**Limitations**:
+
+- **HMR Support**: Requires Webpack restart to reflect changes.
+
+**Example**:
+
+```js
+{
+  import: 'path/to/template.html',
+  filename: 'path/output.html',
+  data: { title: 'Page Title', description: 'Page Description' }
+}
+```
+
+### `data` as `string`
+
+**Type**: `string`
+
+Specifies an absolute or relative path to a JSON or JavaScript file. For a JavaScript file,
+ensure the module exports an object.
+
+**Supported formats**:
+
+- JavaScript
+- JSON
+
+**HMR Support**:
+
+- Changes trigger Webpack recompilation if the file is included in watch options.
+
+**Example**:
+
+```js
+{
+  import: 'path/to/template.html',
+  filename: 'path/output.html',
+  data: 'path/to/renderData.json'
+}
+```
+
+**Use Case Comparison**:
+
+| `data`   | Best For              | HMR Support |
+| -------- | --------------------- | ----------- |
+| `object` | Static data           | No          |
+| `string` | Dynamic/editable data | Yes         |
+
+## Notes
+
+Webpack uses the `context` configuration to resolve relative paths.
+
+**References**:
+
+- Webpack [`context`](https://webpack.js.org/configuration/entry-context/#context)
+- Webpack [HMR](https://webpack.js.org/concepts/hot-module-replacement/#get-started)
+- Webpack [template strings](https://webpack.js.org/configuration/output/#template-strings)

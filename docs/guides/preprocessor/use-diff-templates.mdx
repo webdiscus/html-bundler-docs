@@ -1,0 +1,58 @@
+---
+sidebar_position: 110
+---
+
+# Usage different template engines
+
+When you have many templates with different syntax, you can use a separate module rules for each template engine.
+For example, in your project are mixed templates with EJS and Handlebars syntax.
+
+```
+- src/views/ejs/home.ejs
+- src/views/hbs/about.hbs
+```
+
+To handle different templates, define the `test` plugin option that must match those templates and
+add a preprocessor for each template type in the module rules.
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      test: /\.(ejs|hbs)$/, // Specify extensions for using templates
+      entry: {
+        index: 'src/views/ejs/home.ejs', // EJS template
+        about: 'src/views/hbs/about.hbs', // Handlebars template
+      },
+    }),
+  ],
+  module: {
+    rules: [
+      // EJS
+      {
+        test: /\.ejs$/,
+        loader: HtmlBundlerPlugin.loader, // Template loader
+        options: {
+          preprocessor: 'ejs',
+          preprocessorOptions: {
+            views: [path.join(__dirname, 'src/views/ejs/partials')],
+          },
+        },
+      },
+      // Handlebars
+      {
+        test: /\.hbs$/,
+        loader: HtmlBundlerPlugin.loader, // Template loader
+        options: {
+          preprocessor: 'handlebars',
+          preprocessorOptions: {
+            views: [path.join(__dirname, 'src/views/hbs/partials')],
+          },
+        },
+      },
+    ],
+  },
+};
+```

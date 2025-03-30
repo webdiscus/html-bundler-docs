@@ -1,0 +1,78 @@
+---
+sidebar_position: 2
+---
+
+# Nunjucks
+
+Link: [Nunjucks](https://mozilla.github.io/nunjucks/)
+
+You need to install the `nunjucks` package:
+
+```
+npm i -D nunjucks
+```
+
+## `preprocessor: 'nunjucks'`
+
+For example, there is the template _src/views/page/index.njk_
+
+```html
+<html>
+  <body>
+    <h1>{{ headline }}!</h1>
+    <ul class="people">
+      {% for name in people %}
+      <li class="name">{{ name }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
+```
+
+Define the `preprocessor` as `nunjucks`:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: {
+          import: './src/views/page/index.njk',
+          data: {
+            headline: 'Breaking Bad',
+            people: ['Walter White', 'Jesse Pinkman'],
+          },
+        },
+      },
+      preprocessor: 'nunjucks', // use Nunjucks templating engine
+      // preprocessorOptions: {...},
+    }),
+  ],
+};
+```
+
+## `preprocessorOptions`
+
+```js
+{
+  preprocessor: 'nunjucks',
+  preprocessorOptions: {
+    // here are preprocessor options
+    // an array of relative or absolute templates paths, defaults the current working directory
+    views: [
+      'src/views/includes',
+      'src/views/partials',
+    ],
+    async: false, // defaults 'false'
+    jinjaCompatibility: false, // installs support for Jinja compatibility, defaults 'false'
+
+    // here are original Nunjucks options
+    autoescape: true, // escape dangerous characters, defaults 'true'
+    // ...
+  },
+},
+```
+
+For all available options, see the [Nunjucks API configure](https://mozilla.github.io/nunjucks/api.html#configure).

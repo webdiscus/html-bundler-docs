@@ -1,0 +1,179 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Basic Setup
+
+Install additional packages for CSS/SCSS:
+
+<Tabs groupId="packages">
+  <TabItem value="npm" label="npm">
+    ```bash
+    npm install --save-dev css-loader sass sass-loader
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+    ```bash
+    yarn add --dev css-loader sass sass-loader
+    ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+    ```bash
+    pnpm add --save-dev css-loader sass sass-loader
+    ```
+  </TabItem>
+</Tabs>
+
+There is an example of the project structure for a multiple pages:
+
+```
+my-project/
+├── dist/  (generated output)
+├── src/
+│   ├── images/
+│   │   ├── favicon.
+│   │   ├── banner.jpg
+│   ├── styles/
+│   │   ├── vendor.scss
+│   ├── scripts/
+│   │   ├── vendor.js
+│   ├── pages/
+│   │   ├── home/
+│   │   │   ├── index.html
+│   │   │   ├── style.scss
+│   │   │   ├── script.js
+│   │   ├── about/
+│   │   │   ├── index.html
+│   │   │   ├── style.scss
+│   │   │   ├── script.js
+├── webpack.config.js
+└── package.json
+
+```
+
+The recommended base Webpack configuration, _webpack.config.js_:
+
+```js
+const path = require('path');
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  resolve: {
+    alias: {
+      '@images': path.join(__dirname, 'src/images'),
+      '@scripts': path.join(__dirname, 'src/scripts'),
+      '@styles': path.join(__dirname, 'src/styles'),
+    },
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        // Define entry points for pages
+        index: './src/pages/home/index.html', // --> dist/index.html
+        'about-us': './src/pages/about/index.html', // --> dist/about-us.html
+      },
+      js: {
+        filename: 'js/[name].[contenthash:8].js', // Output JS filename
+      },
+      css: {
+        filename: 'css/[name].[contenthash:8].css', // Output CSS filename
+      },
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.s?css$/,
+        use: ['css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(png|jpe?g|svg)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'img/[name].[hash:8][ext]', // Output images filename
+        },
+      },
+    ],
+  },
+};
+```
+
+> :::info
+> - The default output directory is `dist/`.
+> - All output filenames are relative to the output directory.
+> - The `entry` key determines the output HTML filename (excluding `.html`).
+> - The `js.filename` is the output JS filename.
+> - The `css.filename` is the output CSS filename.
+> - The `generator.filename` is the output filename for matched images.
+
+> :::tip
+> In sources use Webpack aliases defined in `resolve.alias` to avoid relative paths like:
+> - `../../images/`
+> - `../../styles/`
+> - `../../scripts/`
+> - etc.
+
+The template contains Webpack aliases to source resources:
+
+<Tabs groupId="resources">
+  <TabItem value="src HTML" label="src/pages/home/index.html">
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <title>Home</title>
+      <link href="@images/favicon.svg" rel="icon" type="image/svg+xml">
+      <link href="./style.scss" rel="stylesheet"> <!-- local template directory -->
+      <link href="@styles/vendor.scss" rel="stylesheet">
+      <script src="@scripts/vendor.js" defer="defer"></script>
+    </head>
+    <body>
+      <h1>Home</h1>
+      <img src="@images/banner.png" alt="banner" />
+      <script src="./script.js"></script> <!-- local template directory -->
+    </body>
+    </html>
+    ```
+  </TabItem>
+  <TabItem value="dist HTML" label="dist/index.html (generated)">
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <title>Home</title>
+      <link href="img/favicon.f2794493.svg" rel="icon" type="image/svg+xml">
+      <link href="css/style.1b2f962c.css" rel="stylesheet">
+      <link href="css/vendor.487ba887.css" rel="stylesheet">
+      <script src="js/vendor.63bd5560.js" defer="defer"></script>
+    </head>
+    <body>
+      <h1>Home</h1>
+      <img src="img/banner.7b396424.png" alt="banner" />
+      <script src="js/script.0132c52e.js"></script>
+    </body>
+    </html>
+    ```
+  </TabItem>
+</Tabs>
+
+The generated output:
+
+```
+my-project/
+├── dist/
+│   ├── img/
+│   │   ├── favicon.f2794493.svg
+│   │   ├── banner.7b396424.png
+│   ├── js/
+│   │   ├── script.0132c52e.js
+│   │   ├── vendor.63bd5560.js
+│   ├── css/
+│   │   ├── style.1b2f962c.css
+│   │   ├── vendor.487ba887.css
+|   ├── index.html
+|   ├── about-us.html
+├── src/
+```

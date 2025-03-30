@@ -1,0 +1,52 @@
+---
+sidebar_position: 2
+---
+
+# Mustache
+
+Link: [Mustache](https://github.com/janl/mustache.js)
+
+You need to install the `mustache` package:
+
+```
+npm i -D mustache
+```
+
+For example, there is the template _src/views/page/index.mustache_
+
+```html
+<html>
+  <body>
+    <h1>{{ headline }}</h1>
+    <ul class="people">
+      {{#people}}
+      <li>{{.}}</li>
+      {{/people}}
+    </ul>
+  </body>
+</html>
+```
+
+Define the `preprocessor` as a render function:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+const Mustache = require('mustache');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      test: /\.(html|mustache)$/, // add the test option to match *.mustache files in entry
+      index: {
+        import: './src/views/page/index.mustache',
+        data: {
+          headline: 'Breaking Bad',
+          people: ['Walter White', 'Jesse Pinkman'],
+        },
+      },
+      // define preprocessor as the function that should return a string or promise
+      preprocessor: (content, { data }) => Mustache.render(content, data),
+    }),
+  ],
+};
+```

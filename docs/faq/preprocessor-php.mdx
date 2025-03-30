@@ -1,0 +1,68 @@
+---
+sidebar_position: 99
+title: How to process a PHP template
+---
+
+# How to process a PHP template (.phtml)
+
+The plugin can replace the source filenames of scripts, styles, images, etc. with their output filenames in a template.
+
+For example, there is the PHP template _src/views/index.phtml_:
+
+```php
+<?php
+  $title = 'Home';
+?>
+<html>
+<head>
+  <title><?= $title ?></title>
+  <link href="./style.css" rel="stylesheet">
+  <script src="./main.js" defer="defer"></script>
+</head>
+<body>
+  <h1>Hello World!</h1>
+</body>
+</html>
+```
+
+The PHP template should not be compiled into pure HTML, but only should be processed the source assets.
+In this case, the `preprocessor` must be disabled.
+
+```js
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      test: /\.(php|phtml)$/i, // define template extensions to be processed
+      filename: '[name].phtml', // define output filename for templates defined in entry
+      entry: {
+        index: './src/views/index.phtml',
+      },
+      js: {
+        filename: 'js/[name].[contenthash:8].js',
+      },
+      css: {
+        filename: 'css/[name].[contenthash:8].css',
+      },
+      preprocessor: false, // disable preprocessor
+    }),
+  ],
+};
+```
+
+The processed PHP template _dist/index.phtml_:
+
+```php
+<?php
+  $title = 'Home';
+?>
+<html>
+<head>
+  <title><?= $title ?></title>
+  <link href="css/style.026fd625.css" rel="stylesheet">
+  <script src="js/main.3347618e.js" defer="defer"></script>
+</head>
+<body>
+  <h1>Hello World!</h1>
+</body>
+</html>
+```

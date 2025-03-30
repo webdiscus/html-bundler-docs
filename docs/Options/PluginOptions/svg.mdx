@@ -1,0 +1,97 @@
+---
+sidebar_position: 60
+slug: /plugin-options-svg
+title: svg
+tags: [SVG, inline]
+---
+
+# Options for SVG
+
+Option: `svg`
+
+The option to configure inlining SVG into HTML, JS and CSS.
+
+Type:
+```ts
+type SvgOptions = {
+  enabled?: boolean;
+  test?: RegExp;
+  inline?: {
+    embed?: boolean;
+    encoding?: 'base64' | false;
+  };
+};
+```
+
+- `enabled` - enable this option. Defaults `true`.
+- `test` - an RegEpx to apply this options to SVG files that pass test assertion. Defaults `/\.svg/i`.
+- `inline` - options to inline SVG:
+- `embed` - enable inline SVG by replacing `<img>` with `<svg>`, only in HTML. Defaults `false`.\
+Equivalent to URL query: `?inline=embed` or `?embed`.
+- `encoding` - data URL encoding, overrides `generator.dataUrl.encoding` Webpack option.\
+Values:
+- `'base64'` - force encode the data URL as `base64`. Defaults.\
+Equivalent to URL query: `?inline=base64`.
+- `false` - force disable encoding and escape the utf-8 data URL.\
+Equivalent to URL query: `?inline=utf8`.
+
+TODO: replace `escape` value with `utf8` in code.
+
+Choosing UTF-8 encoding over Base64 offers several advantages:
+
+- The resulting string is at least 30% shorter.
+- It compresses more efficiently with gzip.
+- Browsers parse UTF-8 encoded strings faster than their Base64 equivalents.
+
+> :::tip
+> To inline a single SVG file use the `?inline` URL query.
+
+## Using query
+
+### `?inline`
+
+Force inline SVG as a data URL using default encoding, ignoring the module type, even is it `asset/resource`.
+
+```html
+<img src="./icon.svg?inline"/>
+```
+Output is depends on `generator.dataUrl.encoding` Webpack option, default encoding is `base64`:
+```html
+<img src="data:image/svg+xml;base64,PHN2Zy..."/>
+```
+
+### `?inline=base64`
+
+Force inline SVG as a base64-encoded data URL, ignoring the `generator.dataUrl.encoding` Webpack option.
+
+```html
+<img src="./icon.svg?inline=base64"/>
+```
+Output:
+```html
+<img src="data:image/svg+xml;base64,PHN2Zy..."/>
+```
+
+### `?inline=utf8`
+
+Force inline SVG as a UTF-8-encoded escaped data URL, ignoring the `generator.dataUrl.encoding` Webpack option.
+
+```html
+<img src="./icon.svg?inline=utf8"/>
+```
+Output:
+```html
+<img src="data:image/svg+xml,%3Csvg%20...%2F%3E"/>
+```
+
+### `?inline=embed` / `?embed`
+
+Force embed SVG as a raw content replacing `<img>` tag with `<svg>`, works only in HTML.
+
+```html
+<img class="icon" alt="stern" src="./icon.svg?embed"/>
+```
+Output:
+```html
+<svg class="icon" viewBox="0 96 960 960" width="48" height="48"><title>stern</title>...</svg>
+```

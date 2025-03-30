@@ -1,0 +1,276 @@
+---
+sidebar_position: 2
+---
+
+# Handlebars
+
+Link: [Handlebars](https://handlebarsjs.com)
+
+You need to install the `handlebars` package:
+
+```
+npm i -D handlebars
+```
+
+## `preprocessor: 'handlebars'`
+
+For example, there is the template _src/views/page/home.hbs_
+
+```hbs
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title }}</title>
+</head>
+<body>
+  {{> header }}
+  <div class="container">
+    <h1>Handlebars</h1>
+    <div>{{ arraySize persons }} persons:</div>
+    <ul class="person">
+      {{#each persons}}
+        {{> person person=.}}
+      {{/each}}
+    </ul>
+  </div>
+  {{> footer }}
+</body>
+</html>
+```
+
+Where the `{{> header }}`, `{{> person person=.}}` and `{{> footer }}` are partials.
+
+Define the `preprocessor` as `handlebars`:
+
+```js
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        // define templates here
+        index: {
+          import: 'src/views/pages/home.hbs', // => dist/index.html
+          // pass data to template as an object
+          // data: { title: 'Handlebars', persons: [...] },
+          // OR define the data file
+          data: 'src/views/pages/homeData.js',
+        },
+      },
+      // use handlebars templating engine
+      preprocessor: 'handlebars',
+      // define handlebars options
+      preprocessorOptions: {
+        partials: ['src/views/partials'],
+        helpers: {
+          arraySize: (array) => array.length,
+        },
+      },
+    }),
+  ],
+};
+```
+
+[Source code of the example](https://github.com/webdiscus/html-bundler-webpack-plugin/tree/master/examples/handlebars/)
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/edit/webpack-webpack-js-org-mxbx4t?file=webpack.config.js)
+
+
+## `preprocessorOptions`
+
+The `preprocessor` has built-in `include` helper, to load a partial file directly in a template without registration of partials.
+
+The `include` helper has the following _de facto_ standard options:
+
+```js
+{
+  // defaults process.cwd(), root path for includes with an absolute path (e.g., /file.html)
+  root: path.join(__dirname, 'src/views/'), // defaults process.cwd()
+  // defaults [], an array of paths to use when resolving includes with relative paths
+  views: [
+    'src/views/includes', // relative path
+    path.join(__dirname, 'src/views/partials'), // absolute path
+  ],
+},
+```
+
+For example, there are template page and partials:
+
+```
+src/views/
+├── page/
+│   └── home.html
+├── includes/
+│   ├── gallery.html
+│   └── teaser.html
+├── partials/
+│   ├── footer.html
+│   └── menu/
+│       ├── nav.html
+│       └── top/
+│           └── desktop.html
+```
+
+Include the partials in the `src/views/page/home.html` template with the `include` helper:
+
+```html
+<!-- root path -->
+{{ include '/includes/gallery' }}
+
+<!-- views paths -->
+{{ include 'menu/top/desktop' }}
+{{ include 'menu/nav' }}
+{{ include 'teaser' }}
+{{ include 'footer' }}
+```
+
+The `include` helper automatically resolves `.html` and `.hbs` extensions, it can be omitted.
+
+### The `runtime` option
+
+The path to the handlebars runtime library. The path can be absolute or relative to `node_modules` directory.
+Defaults runtime file is `handlebars/runtime`.
+This options is used only by import templates in JavaScript, in [compile mode](#compile-mode).
+
+### The `partials` option
+
+Type: `Array<string>|Object` Default: `[]`
+
+If you use the partials syntax `{{> footer }}` to include a file, then use the `partials` option.
+Partials will be auto-detected in paths recursively and registered under their relative paths, without an extension.
+
+```js
+{
+  preprocessor: 'handlebars',
+  preprocessorOptions: {
+    // an array of relative or absolute paths to partials
+    partials: [
+      'src/views/includes', // relative path
+      path.join(__dirname, 'src/views/partials'), // absolute path
+    ],
+  },
+},
+```
+
+For example, if the partial path is the `src/views/partials` then the file `src/views/partials/menu/top/desktop.html` will have the partial name `menu/top/desktop`.
+
+You can define all partials manually using the option as an object:
+
+```js
+{
+  // define partials manually
+  partials: {
+    teaser: path.join(__dirname, 'src/views/includes/teaser.html'),
+    gallery: path.join(__dirname, 'src/views/includes/gallery.html'),
+    footer: path.join(__dirname, 'src/views/partials/footer.html'),
+    'menu/nav': path.join(__dirname, 'src/views/partials/menu/nav.html'),
+    'menu/top/desktop': path.join(__dirname, 'src/views/partials/menu/top/desktop.html'),
+  },
+},
+```
+
+Include the partials in the `src/views/page/home.html` template:
+
+```html
+{{> menu/top/desktop }}
+{{> menu/nav }}
+{{> teaser }}
+{{> gallery }}
+{{> footer }}
+```
+
+### The `helpers` option
+
+Type: `Array<string>|Object` Default: `[]`
+
+When the `helpers` is an array of relative or absolute paths to helpers,
+then the name of a helper is the relative path to the helper file without an extension.
+
+For example, there are helper files:
+
+```
+src/views/helpers/bold.js
+src/views/helpers2/italic.js
+src/views/helpers2/wrapper/span.js
+```
+
+The preprocessor options:
+
+```js
+{
+  preprocessor: 'handlebars',
+  preprocessorOptions: {
+    // an array of relative or absolute paths to helpers
+    helpers: [
+      'src/views/helpers',
+      'src/views/helpers2',
+    ],
+  },
+},
+```
+
+Usage of helpers:
+
+```html
+{{#bold}}The bold text.{{/bold}} {{#italic}}The italic text.{{/italic}}
+
+<!-- the helper with namespace `wrapper/span` -->
+{{#[wrapper/span]}}The text wrapped with span tag.{{/[wrapper/span]}}
+```
+
+> :::note
+>
+> - The helper located in a subdirectory, e.g. `wrapper/span.js` will be available in template as `[wrapper/span]`.
+> - When helper name contain the `/` slash, then the helper name must be wrapped with the `[]`.
+
+You can define helpers manually using `name: function` object:
+
+```js
+{
+  preprocessor: 'handlebars',
+  preprocessorOptions: {
+    // define helpers manually
+    helpers: {
+      bold: (options) => new Handlebars.SafeString(`<strong>${options.fn(this)}</strong>`),
+    },
+  },
+},
+```
+
+This plugin has own `build-in` helpers:
+
+- `include` - includes a template file relative to paths defined in `views` option, the default path is the project root path
+```hbs
+{{include 'TEMPLATE_FILE'}}
+  ```
+- `assign` - creates a new named variable or override old.
+You can define many variables. The variables are available in included partials.
+
+```hbs
+{{assign title='Homepage' header='Home'}}
+{{> layout}}
+  ```
+
+_layout.hbs_
+
+```hbs
+<title>{{title}}</title>
+<h1>{{header}}</h1>
+  ```
+
+- `partial` and `block`:
+
+`partial` - defines the block content
+
+```hbs
+{{#partial 'BLOCK_NAME'}}BLOCK_CONTENT{{/partial}}
+  ```
+
+`block` - outputs the block content, it can be used in another partial file, e.g. in a layout partial
+
+```hbs
+{{#block 'BLOCK_NAME'}}default content or empty{{/block}}
+  ```
+
+For the complete list of Handlebars `compile` options see [here](https://handlebarsjs.com/api-reference/compilation.html).
