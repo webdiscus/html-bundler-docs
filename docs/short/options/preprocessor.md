@@ -1,17 +1,20 @@
-## `preprocessor`
+# `preprocessor`
 
 ```ts
-type Preprocessor =
-  | TemplatingEngineName
-  | PreprocessorFn
-  | false;
+type Preprocessor = TemplatingEngineName | PreprocessorFn | false;
 ```
 
-Specifies the templating engine, a custom processing function, or disables template processing entirely.
+Specifies the built-in templating engine identifier, custom processing function, or disables template processing.
 
-### Default Behavior
+**Valid values**:
 
-The default `preprocessor` is pre-configured as the following function:
+- **`TemplatingEngineName`**: Built-in templating engine identifier.
+- **`PreprocessorFn`**: Custom processing function.
+- **`false`**: Disables template processing entirely.
+
+## Default Configuration
+
+The default preprocessor uses Eta templating engine:
 
 ```js
 const { Eta } = require("eta");
@@ -23,95 +26,84 @@ const eta = new Eta({
 preprocessor = (content, { data }) => eta.renderString(content, data);
 ```
 
-### `TemplatingEngineName`
+## Templating Engines
 
 ```ts
-type TemplatingEngineName: 'eta' | 'ejs' | 'handlebars' | 'nunjucks' | 'pug' | 'twig';
+type TemplatingEngineName = "eta" | "ejs" | "handlebars" | "nunjucks" | "pug" | "twig";
 ```
 
-The plugin includes built-in support for these engines and uses their default configurations unless overridden
-in [`preprocessorOptions`](preprocessor-options#preprocessoroptions).
+Supported engines use default configurations unless overridden in [`preprocessorOptions`](preprocessor-options#preprocessoroptions).
 
-### `PreprocessorFn`
+## Custom Processing Function
 
 ```ts
 type PreprocessorFn = (
   content: string,
-  loaderContext: LoaderContext<object> & { data: { [key: string]: any; } | string; },
+  loaderContext: LoaderContext<object> & {
+    data: { [key: string]: any; } | string;
+  },
 ) => string | Promise<any> | undefined;
 ```
 
-Defines a custom function to process templates with any engine (e.g., LiquidJS, Mustache).
+**Parameters**:
 
-The function arguments:
+- **`content`**: Raw template content (string).
+- **`loaderContext`**:
+  - `mode`: Webpack build mode (`production`/`development`/`none`).
+  - `rootContext`: Webpack context path.
+  - `resource`: Template file URL with query parameters.
+  - `resourcePath`: Absolute template file path.
+  - `data`: Custom template data (object or string).
 
-- `content` Raw template content
-- `loaderContext`
-  - `mode: production | development | none` Webpack mode.
-  - `rootContext: string` Path to Webpack context.
-  - `resource: string` URL to template file, including query.
-  - `resourcePath: string` Template file path.
-  - `data: object | null` Custom data passed to the template.
+**Returns**:
 
-#### Function Behavior
+- **`string`**: Synchronously processed content.
+- **`Promise`**: Asynchronously processed content.
+- **`undefined`**: Leaves original content unchanged.
 
-- Called for each entry file before content processing.
-- Returns:
-  - `string`: Synchronously processed content.
-  - `Promise`: Asynchronously processed content.
-  - `undefined`: Leaves content unchanged.
+## Usage Examples
 
-#### Examples
-
-**Synchronous Processing:**
+**Synchronous Processing**:
 
 ```js
 {
-  preprocessor: ((content, { data }) => render(content, data));
+  preprocessor: (content, { data }) => renderSync(content, data),
 }
 ```
 
-**Asynchronous Processing:**
+**Asynchronous Processing**:
 
 ```js
 {
-  preprocessor: ((content, { data }) =>
+  preprocessor: (content, { data }) =>
     new Promise((resolve) => {
-      const result = render(content, data);
+      const result = renderAsync(content, data);
       resolve(result);
-    }));
+    }),
 }
 ```
 
-### `false`
-
-Disables template processing. The plugin only resolves asset paths in HTML-like templates (e.g., for server-side rendering).
-
-Example:
+**Disable Processing**:
 
 ```js
 {
-  preprocessor: false; // Only replace filenames, leave content unchanged
+  preprocessor: false, // Only updates resource paths
 }
 ```
 
-```js
-{
-  preprocessor: false,
-}
-```
+---
 
-### Notes
+## Related Resources
 
-- **EJS-like Syntax**: Supported by default. Omit `HtmlBundlerPlugin.loader` in Webpack config.
-- **PHP Templates**: See [processing guide](recipes#recipe-preprocessor-php).
-
-**References**:
-
-- [Loader Context][webpack-loader-context-url]
-- [Webpack mode][webpack-mode-url]
-- Engine Docs: [Eta][eta-url], [EJS][ejs-url], [Handlebars][handlebars-url], [Nunjucks][nunjucks-url],
-  [LiquidJS][liquidjs-url], [Mustache][mustache-url]
+- [Webpack Loader Context][webpack-loader-context-url]
+- [Webpack Mode][webpack-mode-url]
+- Templating Engine Docs:
+  - [Eta][eta-url]
+  - [EJS][ejs-url]
+  - [Handlebars][handlebars-url]
+  - [Nunjucks][nunjucks-url]
+  - [LiquidJS][liquidjs-url]
+  - [Mustache][mustache-url]
 
 [ejs-url]: https://ejs.co
 [eta-url]: https://eta.js.org

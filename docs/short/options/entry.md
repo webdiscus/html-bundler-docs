@@ -1,21 +1,32 @@
-## `entry`
+# `entry`
 
 **Type**: `EntryObject | EntryDescription[] | string`
+
+**Default**: `[name].html`
 
 Defines HTML templates as entry points for the plugin. These entries are processed to extract resources and generate
 optimized output files. Use this option to configure single templates, directories, or complex multi-page setups.
 
-### Configuration Types
+**Valid values**:
 
-#### `string`
+- `string` Template directory reference
+- `EntryObject` Named entry points
+- `EntryDescription[]` Entry collection
+
+## Template Directory Reference
+
+**Type**: `string`
 
 Specifies an absolute/relative path to the directory containing HTML templates.
 
 **Features**:
 
 - Recursively detects files matching [`test`](test#test) option.
+- Inherits includes/excludes patterns from [`entryFilter`](entryFilter#entryfilter)
 - Preserves source directory structure in the output.
-- Simple configuration for bulk processing.
+- Simplifies bulk processing configuration.
+
+**Example**:
 
 ```js
 // webpack.config.js
@@ -28,7 +39,7 @@ module.exports = {
 };
 ```
 
-#### `EntryObject`
+## Named Entry Points
 
 ```typescript
 type EntryObject = {
@@ -36,12 +47,16 @@ type EntryObject = {
 };
 ```
 
-Defines named entry points, where each key specifies the output file path relative to the output directory.
+**Properties**:
 
-The corresponding value can be either `string` containing an absolute/relative path to the source file, or
-the [EntryDescription](#entrydescription) object. The `EntryDescription.filename` property is omitted.
+- `name` Output filename relative to [`outputPath`](outputPath#outputpath) configuration
 
-**Example `{name: string}`**:
+**Valid values**:
+
+- `string` Absolute/relative path to the source file.
+- `EntryDescription` Single Entry Configuration
+
+**Source file reference example**:
 
 ```js
 // webpack.config.js
@@ -57,7 +72,7 @@ module.exports = {
 };
 ```
 
-**Example `{name: EntryDescription}`**:
+**Advanced entry configuration example**:
 
 ```js
 // webpack.config.js
@@ -79,11 +94,13 @@ module.exports = {
 };
 ```
 
-### `EntryDescription[]`
+## Entry collection
 
-Explicit array format for full control.
+**Type**: `EntryDescription[]`
 
-**Requirements**:
+Explicit array format for granular control over entries.
+
+**`EntryDescription` Requirements**:
 
 - `import`: Required
 - `filename`: Required
@@ -113,7 +130,7 @@ module.exports = {
 };
 ```
 
-### `EntryDescription`
+## `EntryDescription`
 
 ```ts
 import type { AssetInfo, PathData } from "webpack";
@@ -127,41 +144,13 @@ type EntryDescription = {
 type FilenameTemplate = (pathData: PathData, assetInfo?: AssetInfo): string;
 ```
 
-Defines detailed configuration for a single entry point.
+**Properties**:
 
-**Requirements**:
-
-- `import`: Always required
-- `filename`: Required in Entry Collection. Omitted in Named Entries
-- `data`: Optional template variables
-
-#### `import`
-
-**Type**: `string`, **Required**
-
-Specifies an absolute or relative file path.
+- `import` Specifies an absolute or relative file path to the source file.
+- `filename` Template-specified output filename. See [`filename`](filename#filename).
+- `data` Template-specific data configuration.
 
 **Example**:
-
-```js
-{
-  import: 'src/index.html',
-  filename: '[name]/index.html',
-}
-```
-
-#### `filename`
-
-Type: `FilenameTemplate | string`
-
-Default: `[name].html`
-
-Defines the output filename, including its path relative to the output directory.
-Accepts Webpack template strings (`[name]`,`[basename]`,`[contenthash]`,...).
-
-##### Examples
-
-**Template String Example**:
 
 ```js
 {
@@ -186,16 +175,16 @@ Accepts Webpack template strings (`[name]`,`[basename]`,`[contenthash]`,...).
 }
 ```
 
-#### `data`
+### `EntryDescription.data`
 
 Type: `object | string`
 
-Template-specific variables that override [global data](data#data).
+Template-specific data that override the [global data](data#data).
 
-Specified in one of two ways:
+**Configuration**:
 
-- As an `object`.
-- As a `string` containing the path to a JavaScript or JSON file.
+- `object` Object-based data.
+- `string` File reference data.
 
 **Key Behaviors**:
 
@@ -203,7 +192,7 @@ Specified in one of two ways:
 - **Merge Logic**: Template-specific data overrides matching properties in the global data object.
 - **HMR Support**: Webpack detects changes only when data is a file path.
 
-##### `object` Data object
+#### `EntryDescription.data` as `object`
 
 **Type**: `object`
 
@@ -211,7 +200,7 @@ Directly defines data as a JavaScript object.
 
 **Limitations**:
 
-- **HMR Support**: Changes require Webpack restart to apply.
+- **HMR Support**: Requires Webpack restart to reflect changes.
 
 **Example**:
 
@@ -223,7 +212,7 @@ Directly defines data as a JavaScript object.
 }
 ```
 
-##### `string`
+#### `EntryDescription.data` as `string`
 
 **Type**: `string`
 
@@ -249,7 +238,7 @@ ensure the module exports an object.
 }
 ```
 
-##### Key Notes
+#### Key Notes
 
 **Use Case Comparison**:
 
@@ -258,9 +247,9 @@ ensure the module exports an object.
 | `object` | Static data           | No          |
 | `string` | Dynamic/editable data | Yes         |
 
-### Notes
+## Notes
 
-- Webpack uses the `context` option to resolve relative paths.
+- Webpack uses the `context` configuration to resolve relative paths.
 
 **References**:
 

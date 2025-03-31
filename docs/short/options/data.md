@@ -1,25 +1,23 @@
-## `data`
+# `data`
 
-**Type**: `object|string`
+**Type**: `object | string`
 
 **Default**: `{}`
 
-Defines data that is accessible in all templates.
+Defines template data accessible across all templates.
 
-Specified in one of two ways:
+## Configuration
 
-- As an `object`.
-- As a `string` containing the path to a JavaScript or JSON file.
+- `object`: Object-based data.
+- `string`: Specifies the path to the template data file.
 
 **Key Behaviors**:
 
-- **Template-Specific Overrides**: Use [entry data](entry#data) to pass data to individual templates.
+- **Template-Specific Overrides**: Use [entry data](entry#entrydescriptiondata) to pass data to individual templates.
 - **Merge Logic**: Template-specific data overrides matching properties in the global data object.
-- **HMR Support**: Webpack detects changes only when `data` is a data file reference.
+- **HMR Support**: `data` is configured as a reference to a data file.
 
-### Configuration Types
-
-#### `object`
+## Object-Based Data
 
 **Type**: `object`
 
@@ -27,7 +25,7 @@ Directly defines data as a JavaScript object.
 
 **Limitations**:
 
-- **HMR Support**: Requires Webpack restart to apply changes.
+- **HMR Support**: Requires Webpack restart to reflect changes.
 
 **Example**:
 
@@ -45,12 +43,12 @@ module.exports = {
 };
 ```
 
-#### `string`
+## File Reference Data
 
 **Type**: `string`
 
-Specifies an absolute or relative path to a JSON or JavaScript file. For a JavaScript file,
-ensure the module exports an object.
+Specifies an absolute or relative path to a JSON or JavaScript file.
+For a JavaScript file, the module must export an object.
 
 **Supported formats**:
 
@@ -59,7 +57,7 @@ ensure the module exports an object.
 
 **HMR Support**:
 
-- Changes trigger Webpack recompilation if the file is included in watch options.
+- Changes initiate Webpack recompilation if the file is part of the watch configuration.
 
 **Example**:
 
@@ -77,22 +75,21 @@ module.exports = {
 };
 ```
 
-#### Key Notes
-
-**Use Case Comparison**:
+## Use Case Comparison
 
 | `data`   | Best For              | HMR Support |
 | -------- | --------------------- | ----------- |
 | `object` | Static data           | No          |
 | `string` | Dynamic/editable data | Yes         |
 
-### Notes
+## Notes
+
+- Relative paths are resolved using Webpack the `context` configuration.
 
 **References**:
 
-- Webpack uses the `context` option to resolve relative paths.
+- Webpack [`context`][webpack-context-url]
+- Webpack [HMR][webpack-hmr-url]
 
-**References**:
-
-- Webpack [`context`](https://webpack.js.org/configuration/entry-context/#context)
-- Webpack [HMR](https://webpack.js.org/concepts/hot-module-replacement/#get-started)
+[webpack-context-url]: https://webpack.js.org/configuration/entry-context/#context
+[webpack-hmr-url]: https://webpack.js.org/concepts/hot-module-replacement/#get-started
