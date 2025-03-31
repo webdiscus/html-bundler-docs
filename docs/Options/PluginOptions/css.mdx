@@ -36,15 +36,15 @@ Default properties:
 ```
 
 - `test` - an RegEpx to process all source styles that pass test assertion
-- `filename` - an output filename of extracted CSS. Details see by [filename option](#option-filename).
+- `filename` - an output filename of extracted CSS. Details see by [filename option](/plugin-options-filename).
 - `chunkFilename` - an output filename of non-initial chunk files, e.g., a style file imported in JavaScript.
-- `outputPath` - an output path of extracted CSS. Details see by [outputPath option](#option-outputpath).
+- `outputPath` - an output path of extracted CSS. Details see by [outputPath option](/plugin-options-outputPath).
 - `inline` - inject CSS into into HTML at render time, available values:
-- `false` - stores CSS in an output file (**defaults**)
-- `true` - adds CSS to the DOM by injecting a `<style>` tag
-- `'auto'` - in `development` mode - adds to DOM, in `production` mode - stores as a file
-- `hot` - inject CSS into the DOM at runtime and enable HMR (hot update CSS without a full reload),\
-similar to how it works in [style-loader](https://github.com/webpack-contrib/style-loader).
+  - `false` - stores CSS in an output file (**defaults**)
+  - `true` - adds CSS to the DOM by injecting a `<style>` tag
+  - `'auto'` - in `development` mode - adds to DOM, in `production` mode - stores as a file
+- `hot` - inject CSS into the DOM at runtime and enable HMR (hot update CSS without a full reload),
+  similar to how it works in [style-loader](https://github.com/webpack-contrib/style-loader).
 
 All source style files specified in `<link href="..." rel="stylesheet">` are automatically resolved,
 and CSS will be extracted to output file. The source filename will be replaced with the output filename.
@@ -94,7 +94,7 @@ If you want to have a different output filename, you can use the `filename` opti
 >   This behavior is a BUG in Webpack. The [style-loader](https://github.com/webpack-contrib/style-loader) has exactly same limitation.
 >
 
-If you use the [Live Reload](#setup-live-reload) configuration, then be sure to exclude the style files (CSS/SCSS) from watching,
+If you use the [Live Reload](/configuration/live-reload) configuration, then be sure to exclude the style files (CSS/SCSS) from watching,
 otherwise after changes a style file, a page will be full reloaded.
 
 > :::info

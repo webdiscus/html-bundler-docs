@@ -19,7 +19,7 @@ A typical example:
 </a>
 ```
 
-To resolve images in the `href` attribute of a tag, just enable it using the [loaderOptions.sources](#loader-option-sources) option.
+To resolve images in the `href` attribute of a tag, just enable it using the [loaderOptions.sources](/plugin-options-sources) option.
 
 ```js
 loaderOptions: {
@@ -39,7 +39,7 @@ which could cause an error if the `href` contained an HTML file, e.g. `<a href="
 
 ### Solution
 
-Use the [filter](#loader-option-sources-filter) function to avoid resolving non-image files.
+Use the [filter](/plugin-options-sources#filter-function) function to avoid resolving non-image files.
 
 ```js
 loaderOptions: {

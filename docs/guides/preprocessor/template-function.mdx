@@ -4,16 +4,16 @@ sidebar_position: 99
 
 # Template function in JavaScript
 
-The [preprocessor](#loader-option-preprocessor) works in two modes: `render` and `compile`.
+The [preprocessor](/plugin-options-preprocessor) works in two modes: `render` and `compile`.
 
 ## Render mode
 
-The `render` is the default mode for the template defined in the [entry](#option-entry) option.
+The `render` is the default mode for the template defined in the [entry](/plugin-options-entry) option.
 The rendered template is an HTML string, which is saved as an HTML file.
 
 You can import the template file as a generated HTML string in JS using the `?render` query.
 To pass simple variables into the imported template you can use query parameters, e.g.: `?render&name=Arnold&age=25`.
-To pass complex variables such as an array or an object use the global [data](#option-data) option.
+To pass complex variables such as an array or an object use the global [data](/plugin-options-data) option.
 
 > :::info
 >
@@ -79,18 +79,18 @@ _./partials/people.ejs_
 
 #### Template engines that do support the `template function` on client-side
 
-- [eta](#loader-option-preprocessor-options-eta) - generates a template function with runtime (~3KB)\
+- [Eta](/guides/preprocessor/eta) - generates a template function with runtime (~3KB)\
 `include` is supported
-- [ejs](#loader-option-preprocessor-options-ejs) - generates a fast smallest pure template function w/o runtime (**recommended** for use on client-side)\
+- [EJS](/guides/preprocessor/ejs) - generates a fast smallest pure template function w/o runtime (**recommended** for use on client-side)\
 `include` is supported
-- [handlebars](#loader-option-preprocessor-options-handlebars) - generates a precompiled template with runtime (~18KB)\
+- [Handlebars](/guides/preprocessor/handlebars) - generates a precompiled template with runtime (~18KB)\
 `include` is supported
-- [nunjucks](#loader-option-preprocessor-options-nunjucks) - generates a precompiled template with runtime (~41KB)\
+- [Nunjucks](/guides/preprocessor/nunjucks) - generates a precompiled template with runtime (~41KB)\
 `include` is supported
-- [twig](#loader-option-preprocessor-options-nunjucks) - generates a precompiled template with runtime (~110KB)\
+- [TwigJS](/guides/preprocessor/twig) - generates a precompiled template with runtime (~110KB)\
 `include` is supported
-- [pug](#loader-option-preprocessor-options-pug) - generates a small pure template function
+- [Pug](/guides/preprocessor/pug) - generates a small pure template function
 
 #### Template engines that do NOT support the `template function` on client-side
 
-- LiquidJS
+- [LiquidJS](/guides/preprocessor/liquid)

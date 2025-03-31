@@ -4,18 +4,12 @@ sidebar_position: 1
 
 # Contribute
 
-- [Questions and Suggestions](#question)
-- [Issues and Bugs](#issue)
-- [Feature Requests](#feature)
-- [Pull Request Submission Guidelines](#submit-pr)
-- [Commit Message Conventions](#commit)
-
-## <a name="question"></a> Got a Question or Suggestion?
+## Got a Question or Suggestion?
 
 If you have questions or suggestions, please create a new [discussion](https://github.com/webdiscus/html-bundler-webpack-plugin/discussions).
 
 
-## <a name="issue"></a> Found an Issue or Bug?
+##Found an Issue or Bug?
 
 Before you submit an issue, please search the issue tracker,
 maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
@@ -33,18 +27,18 @@ Tell us versions of your environment:
 Ideally create a small repository with a reproducible issue.
 
 
-## <a name="feature"></a> Feature Requests?
+## Feature Requests?
 
 You can _request_ a new feature by creating an [issue](https://github.com/webdiscus/html-bundler-webpack-plugin/issues).
 
 The title must begins with `[FEATURE]`.
 
 
-## <a name="submit-pr"></a> Pull Request Submission Guidelines
+## Pull Request Submission Guidelines
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-- Commit your changes using a descriptive commit message that follows our [commit message conventions](#commit).
+- Commit your changes using a descriptive commit message that follows our [commit message conventions](#commit-conventions).
 - Your PR must have only `one` commit. If you have many commits, please squash all commits into one.
 - Please test your pull request:
   - new/changed code `must` be completely covered, at last `95%`
@@ -54,7 +48,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   - all already existing tests must be passed: `npm test`
 
 
-## <a name="commit"></a> Commit Conventions
+## Commit Conventions
 
 Each commit message consists of a **header**, a **body** and a **footer**. The header has a special
 format that includes a **type**, a **scope** and a **subject**:

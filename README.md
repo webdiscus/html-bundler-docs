@@ -43,13 +43,13 @@ npm run build
 
 ## TODO:
 
-- fix intern links (~3% done)
 - refactor documentation
-
 
 ## Done
 
 Please add here refactored points:
+
+- Inner links are fixed.
 
 - Plugin Options
   - test

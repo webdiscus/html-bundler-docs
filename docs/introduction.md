@@ -12,12 +12,12 @@ This plugin will generate an HTML file containing all the necessary links to JS,
 
 ## Key Features
 
-- An [entry point](#option-entry) is any HTML template. **Start from HTML or template**, not from JS.
-- **Automatically** processes templates found in the [entry directory](#option-entry-path).
-- Build-in support for [template engines](#template-engine): [Eta](#using-template-eta), [EJS](#using-template-ejs), [Handlebars](#using-template-handlebars), [Nunjucks](#using-template-nunjucks), [Pug](#using-template-pug), [Tempura](#using-template-tempura), [TwigJS](#using-template-twig), [LiquidJS](#using-template-liquidjs).
+- An [entry point](/plugin-options-entry) is any HTML template. **Start from HTML or template**, not from JS.
+- **Automatically** processes templates found in the [entry directory](/plugin-options-entry#template-directory-reference).
+- Build-in support for [template engines](/category/template-engines): [Eta](/guides/preprocessor/eta), [EJS](/guides/preprocessor/ejs), [Handlebars](/guides/preprocessor/handlebars), [Nunjucks](/guides/preprocessor/nunjucks), [Pug](/guides/preprocessor/pug), [Tempura](/guides/preprocessor/tempura), [TwigJS](/guides/preprocessor/twig), [LiquidJS](/guides/preprocessor/liquid).
 - Build-in support for **Markdown** `*.md` files in templates, see [Markdown demo](https://stackblitz.com/edit/markdown-to-html-webpack?file=webpack.config.js) in browser.
-- Allows to [pass data](#option-entry-advanced) into a template.
-- **Resolve** [source files](#loader-option-sources) of [`scripts`](#option-js), [`styles`](#option-css), images and other assets in HTML:
+- Allows to [pass data](/plugin-options-entry#entrydescriptiondata) into a template.
+- **Resolve** [source files](/plugin-options-sources) of [`scripts`](/plugin-options-js), [`styles`](/plugin-options-css), images and other assets in HTML:
   - `<link href="./style.scss" rel="stylesheet">`
   - `<script src="./app.ts" defer="defer"></script>`
   - `<link href="../images/favicon.svg" type="image/svg" rel=icon />`
@@ -27,17 +27,17 @@ This plugin will generate an HTML file containing all the necessary links to JS,
   - `@font-face { src: url('@fonts/monaco.woff2') ... }`
   - `background-image: url(../images/picture.png);`\
     Resolved assets will be processed and replaced with correct URLs in the generated CSS, without using [resolve-url-loader](https://github.com/bholloway/resolve-url-loader).
-- **Resolve** [route URLs](#option-router) in `a.href`, useful for navigation in multi-pages.
-- **Inline** [JS](#recipe-inline-js), [CSS](#recipe-inline-css) and [Images](#recipe-inline-image) into HTML. See [how to inline all resources](#recipe-inline-all-assets-to-html) into single HTML file.
+- **Resolve** [route URLs](/plugin-options-router) in `a.href`, useful for navigation in multi-pages.
+- **Inline** [JS](/guides/inline-js), [CSS](/guides/inline-css) and [Images](/guides/inline-images) into HTML. See [how to inline all resources](/guides/inline-all-assets) into single HTML file.
 - Supports importing styles in JavaScript.
 - Supports styles used in `*.vue`.
-- Supports the [HMR for CSS](#option-css-hot) to update CSS in browser without a full reload.
-- Watches for changes in the [data file](#option-entry-data) linked to the template in the plugin option.
-- Generates the [preload](#option-preload) tags for fonts, images, video, scripts, styles.
-- Generates the [integrity](#option-integrity) attribute in the `link` and `script` tags.
-- Generates the [favicons](#favicons-bundler-plugin) of different sizes for various platforms.
+- Supports the [HMR for CSS](/plugin-options-css) to update CSS in browser without a full reload.
+- Watches for changes in the [data file](/plugin-options-entry#entrydescriptiondata) linked to the template in the plugin option.
+- Generates the [preload](/plugin-options-preload) tags for fonts, images, video, scripts, styles.
+- Generates the [integrity](/plugin-options-integrity) attribute in the `link` and `script` tags.
+- Generates the [favicons](/Plugins/favicons) of different sizes for various platforms.
 - Minimizes generated HTML.
-- You can create custom plugins using the provided [Plugin Hooks](#plugin-hooks-and-callbacks).
+- You can create custom plugins using the provided [Plugin Hooks](/hooks-and-callbacks).
 - Over 700 [tests](https://github.com/webdiscus/html-bundler-webpack-plugin/tree/master/test) for various use cases.
 
 
@@ -45,37 +45,35 @@ This plugin will generate an HTML file containing all the necessary links to JS,
 
 ![](../static/img/docs/assets-graph.png)
 
-The **HTML Bundler** generates static HTML or [template function](#template-in-js) from [various templates](#template-engine) containing source files of scripts, styles, images, fonts and other resources, similar to how it works in [Vite](https://vitejs.dev/guide/#index-html-and-project-root).
-This plugin looks at the template files in [entry option](#option-entry) to start building the bundle.
-The [source files](#loader-option-sources) of dependencies (scripts, styles, etc.) can be defined directly in the template.
+The **HTML Bundler** generates static HTML or [template function](/guides/preprocessor/template-function) from [various templates](/category/template-engines) containing source files of scripts, styles, images, fonts and other resources, similar to how it works in [Vite](https://vitejs.dev/guide/#index-html-and-project-root).
+This plugin looks at the template files in [entry option](/plugin-options-entry) to start building the bundle.
+The [source files](/plugin-options-sources) of dependencies (scripts, styles, etc.) can be defined directly in the template.
 
 The plugin **resolves source files** of assets in templates and replaces them with correct output URLs in the generated HTML.
 The resolved assets will be processed via Webpack plugins/loaders and placed into the output directory.
 You can use a relative path or Webpack alias to a source file.
 
-A template imported in JS will be compiled into [template function](#template-in-js). You can use the **template function** in JS to render the template with variables in runtime on the client-side in the browser.
+A template imported in JS will be compiled into [template function](/guides/preprocessor/template-function). You can use the **template function** in JS to render the template with variables in runtime on the client-side in the browser.
 
 
 ## How the plugin works
 
 The plugin resolves references in the HTML template and adds them to the Webpack compilation.
 Webpack will automatically process the source files, and the plugin replaces the references with their output filenames in the generated HTML.
-See [how the plugin works under the hood](#plugin-hooks-and-callbacks).
+See [how the plugin works under the hood](/hooks-and-callbacks).
 
 ![](../static/img/docs/workflow.png)
 
 
 ## Why use the HTML Bundler Plugin?
 
-This plugin is a powerful alternative to [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) and a replacement for many [plugins and loaders](#list-of-plugins).
+This plugin is a powerful alternative to [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) and a replacement for many [plugins and loaders](#related-plugins-and-loaders).
 
 The HTML Bundler Plugin works a bit differently than `html-webpack-plugin`.
 It doesn't just inject JavaScript and CSS into an HTML.
 Instead, it resolves all the source files of the assets referenced directly in the template
 and ensures the generated HTML contains the correct output URLs of resources after Webpack processes them.
 Additionally, CSS extracted from styles imported in JS can be injected into HTML as a `<link>` tag or as an inlined CSS.
-
-<a id="list-of-plugins" name="list-of-plugins"></a>
 
 ## Why do developers migrate from Webpack?
 
@@ -98,6 +96,8 @@ The `html-bundler-webpack-plugin` solves this problem by simplifying the entire 
 
 With `html-bundler-webpack-plugin`, Webpack setup becomes much simpler and clear, 
 without complex HTML handling configurations, making Webpack more intuitive.
+
+### Related plugins and loaders
 
 Just one plugin replaces the functionality of the plugins and loaders:
 

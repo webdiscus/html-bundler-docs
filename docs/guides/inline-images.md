@@ -7,7 +7,7 @@ sidebar_position: 4
 You can inline the images in two ways:
 
 - auto inline by image size
-- force inline image using `?inline` query (works in HTML, CSS, [JS](#recipe-import-svg))
+- force inline image using `?inline` query (works in HTML, CSS, [JS](/guides/import-svg-in-js))
 
 Add to Webpack config the rule:
 

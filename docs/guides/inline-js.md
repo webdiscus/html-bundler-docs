@@ -6,11 +6,11 @@ sidebar_position: 3
 
 There are two ways to inline CSS in HTML:
 
-- inline all JS globally with `js.inline` [option](#option-js)
+- inline all JS globally with `js.inline` [option](/plugin-options-js)
 - inline single JS with `?inline` query added to a filename
 
 The `inline` option can take the following values: `false`, `true` and `'auto'`.
-For details see the [inline option](#option-js).
+For details see the [inline option](/plugin-options-js).
 
 > :::note
 >

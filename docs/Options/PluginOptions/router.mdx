@@ -28,15 +28,15 @@ type Router =
 
 - `enabled` - Enable / disable the route resolving. Defaults `true`.
 - `test` - The router resolves values matching to the RegExp only.\
-Defaults, defined the same as [plugin.test](#option-test) option to match templates of used [preprocessor](#option-preprocessor).
+Defaults, defined the same as [plugin.test](/plugin-options-test) option to match templates of used [preprocessor](/plugin-options-preprocessor).
 - `rewriteIndex` - Rewrite the `index.html`.
- - If [publicPath](#webpack-option-output-publicpath) is `auto`, replaces `index.html` with the specified string, should be on of: `'.'`, `''` (empty).
- - If [publicPath](#webpack-option-output-publicpath) is not empty, replaces `index.html` with `''` (empty) regardless of specified value.
+ - If [publicPath](/Options/WebpackOptions/output#outputpublicpath) is `auto`, replaces `index.html` with the specified string, should be on of: `'.'`, `''` (empty).
+ - If [publicPath](/Options/WebpackOptions/output#outputpublicpath) is not empty, replaces `index.html` with `''` (empty) regardless of specified value.
  - If the route URL contains a query or a segment (e.g. `index.html#contact`), the `rewriteIndex` is ignored.
 - `resolve()` - Allow modify the resolved route URL.\
 The argument is the object:
  - `sourceRoute` - The resolved attribute value (absolute path).
- - `outputRoute` - The output URL regards [publicPath](#webpack-option-output-publicpath), e.g. by `auto` publicPath is relative to `outputFile`.
+ - `outputRoute` - The output URL regards [publicPath](/Options/WebpackOptions/output#outputpublicpath), e.g. by `auto` publicPath is relative to `outputFile`.
  - `sourceFile` - The absolute path to the template file where is resolved the `sourceRoute`.
  - `outputFile` - The output HTML filename of `sourceFile`, relative to the `dist/` directory.\
 Return:
@@ -46,7 +46,7 @@ Return:
 The `router` option enable resolving of `a.href` (by defaults) values as a route URL to inner pages.
 This is useful for multi-page sites.
 
-Using the [sources](#loader-option-sources) option you can specify any tag attribute which should be resolved.
+Using the [sources](/plugin-options-sources) option you can specify any tag attribute which should be resolved.
 
 > :::note
 > The router resolves routes specified in the `entry` plugin option only. An external URL will be ignored.

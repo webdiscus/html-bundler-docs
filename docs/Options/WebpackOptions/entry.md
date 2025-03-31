@@ -10,8 +10,8 @@ The starting point to build the bundle.
 > All script and style references can be specified directly in the HTML template.
 
 You can use the Webpack `entry` option to define HTML templates,
-but it is highly recommended to define all templates in plugin option [`entry`](#option-entry),
+but it is highly recommended to define all templates in plugin option [`entry`](/plugin-options-entry),
 because it has an additional `data` property (not available in the Webpack entry)
 to pass custom variables into the HTML template.
 
-For details see the [plugin option `entry`](#option-entry).
+For details see the [plugin option `entry`](/plugin-options-entry).

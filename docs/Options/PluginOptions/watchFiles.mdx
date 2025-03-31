@@ -39,7 +39,7 @@ Allows to configure paths and files to watch file changes for rebuild in `watch`
 > :::info
 >
 > To watch changes with a `live reload` in the browser, you must additionally configure the `watchFiles` in `devServer`,
-> see [setup live reload](#setup-live-reload).
+> see [setup live reload](/configuration/live-reload).
 
 ### Properties
 
@@ -48,7 +48,7 @@ The watching path for each template defined in the entry will be autodetect as t
 E.g., the template `./src/views/index.html` has the watching path of `./src`.
 
 - `includes` - Watch the files specified in `paths`, except `excludes`, that match the regular expressions.
-Defaults, are watched only files that match the [`test`](#option-test) plugin option.
+Defaults, are watched only files that match the [`test`](/plugin-options-test) plugin option.
 
 - `excludes` - Exclude the specified paths or files, that match the regular expressions.
 
@@ -80,4 +80,4 @@ This option has the priority over paths and files.
 
 > :::info
 >
-> To display all watched files, enable the [`verbose`](#option-verbose) option.
+> To display all watched files, enable the [`verbose`](/plugin-options-verbose) option.

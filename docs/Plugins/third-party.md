@@ -5,9 +5,9 @@ sidebar_position: 2
 # Third-party
 
 The third-party plugins not maintained by the HtmlBundlerPlugin.
-It potentially does not have the same support, security policy or license as [Build-in Plugins](#build-in-plugins).
+It potentially does not have the same support, security policy or license as [Build-in Plugins](/Plugins/build-in).
 
-You can create own plugin using the [plugin hooks](#plugin-hooks-and-callbacks).
+You can create own plugin using the [plugin hooks](/hooks-and-callbacks).
 As a reference plugin, you can use the [FaviconsBundlerPlugin](https://github.com/webdiscus/html-bundler-webpack-plugin/tree/master/plugins/favicons-bundler-plugin).
 
 If you have a useful plugin, create a PR with the link to you plugin.

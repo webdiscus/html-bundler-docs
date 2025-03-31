@@ -53,9 +53,9 @@ Type: `string|function` Default: `[name].js`
 The output filename for JS file.
 
 > :::tip
-> Highly recommended to define the `filename` in the Plugin option [`js.filename`](#option-js).
+> Highly recommended to define the `filename` in the Plugin option [`js.filename`](/plugin-options-js).
 
-The output filename for CSS file is determined in the Plugin option [`css.filename`](#option-css).
+The output filename for CSS file is determined in the Plugin option [`css.filename`](/plugin-options-css).
 
 Define output JS and CSS filenames in the Plugin option, in one place:
 
@@ -85,7 +85,7 @@ Type: `string|function` Default: `[name].js`
 The output filename for non-initial chunk files. Details see by [chunkFilename](https://webpack.js.org/configuration/output/#outputchunkfilename).
 
 > :::tip
-> Highly recommended to define the `chunkFilename` in the Plugin option [`js.chunkFilename`](#option-js).
+> Highly recommended to define the `chunkFilename` in the Plugin option [`js.chunkFilename`](/plugin-options-js).
 
 
 ```js

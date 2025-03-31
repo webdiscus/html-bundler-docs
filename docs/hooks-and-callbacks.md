@@ -158,7 +158,7 @@ AsyncSeriesWaterfallHook<[
 
 For details on `AsyncSeriesWaterfallHook` see the [hook interface](https://github.com/webpack/tapable#hookhookmap-interface).
 
-For details on hook parameters, see in the [beforePreprocessor](#loader-option-before-preprocessor) callback option.
+For details on hook parameters, see in the [beforePreprocessor](/plugin-options-beforePreprocessor) callback option.
 
 
 ### `preprocessor`
@@ -172,7 +172,7 @@ AsyncSeriesWaterfallHook<[
 
 For details on `AsyncSeriesWaterfallHook` see the [hook interface](https://github.com/webpack/tapable#hookhookmap-interface).
 
-For details on hook parameters, see in the [preprocessor](#loader-option-preprocessor-custom) callback option.
+For details on hook parameters, see in the [preprocessor](/plugin-options-preprocessor#custom-processing-function) callback option.
 
 ### `resolveSource`
 
@@ -193,7 +193,7 @@ SyncWaterfallHook<[
 _no calback_
 
 
-Called after resolving of a source attribute defined by [source](#loader-option-sources) loader option.
+Called after resolving of a source attribute defined by [source](/plugin-options-sources) loader option.
 
 For details on `SyncWaterfallHook` see the [hook interface](https://github.com/webpack/tapable#hookhookmap-interface).
 
@@ -219,7 +219,7 @@ AsyncSeriesWaterfallHook<[content: string, info: TemplateInfo]>;
 
 For details on `AsyncSeriesWaterfallHook` see the [hook interface](https://github.com/webpack/tapable#hookhookmap-interface).
 
-For details on hook parameters, see in the [postprocess](#option-postprocess) callback option.
+For details on hook parameters, see in the [postprocess](/plugin-options-postprocess) callback option.
 
 
 ### `beforeEmit`
@@ -230,7 +230,7 @@ AsyncSeriesWaterfallHook<[content: string, entry: CompileEntry]>;
 
 For details on `AsyncSeriesWaterfallHook` see the [hook interface](https://github.com/webpack/tapable#hookhookmap-interface).
 
-For details on hook parameters, see in the [beforeEmit](#option-beforeEmit) callback option.
+For details on hook parameters, see in the [beforeEmit](/plugin-options-beforeEmit) callback option.
 
 
 ### `afterEmit`
@@ -241,7 +241,7 @@ AsyncSeriesHook<[entries: CompileEntries]>;
 
 For details on `AsyncSeriesHook` see the [hook interface](https://github.com/webpack/tapable#hookhookmap-interface).
 
-For details on hook parameters, see in the [afterEmit](#option-afterEmit) callback option.
+For details on hook parameters, see in the [afterEmit](/plugin-options-afterEmit) callback option.
 
 
 ### `integrityHashes`

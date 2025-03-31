@@ -6,11 +6,11 @@ sidebar_position: 3
 
 There are 2 ways to inline CSS in HTML:
 
-- inline all CSS with `css.inline` [option](#option-css)
+- inline all CSS with `css.inline` [option](/plugin-options-css)
 - inline single CSS with `?inline` URL query
 
 The `inline` option can take the following values: `false`, `true` and `'auto'`.
-For details see the [inline option](#option-css).
+For details see the [inline option](/plugin-options-css).
 
 > :::note
 >
