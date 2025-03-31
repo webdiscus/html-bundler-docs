@@ -1,14 +1,17 @@
-## `test`
+# `test`
 
 **Type**: `RegExp`
 
-**Default**: Engine-dependent (e.g., Eta, EJS, Handlebars)
+**Default**: Engine-dependent.
 
-Defines a regular expression to validate template file paths. Files matching this pattern are treated as entry points.
+Defines a regular expression to match template files for processing.
 
-### Default Behavior
+## Default Behavior
 
-The default value depends on the selected [`preprocessor`](preprocessor#preprocessor):
+Depends on the [`preprocessor`](preprocessor#preprocessor) configuration. Specifying a `preprocessor` as a supported
+templating engine automatically assigns a corresponding file type pattern to the `test` option.
+
+**Supported Preprocessors & Default Patterns**:
 
 - `ejs` - `/\.(html|ejs)$/i`
 - `eta` - `/\.(html|eta)$/i`
@@ -18,11 +21,21 @@ The default value depends on the selected [`preprocessor`](preprocessor#preproce
 - `tempura` - `/\.(html|hbs|tmpr)$/i`
 - `twig` - `/\.(html|twig)$/i`
 
-> [!NOTE]
->
-> Using the [preprocessor](preprocessor-options#preprocessoroptions) options will be added
-> the templating engine extensions in the `test` automatically. Defaults `preprocessor` is ['eta'](preprocessor-options#eta)
-> therefore is used the `/\.(html|eta)$/` RegExp.
->
-> For example, if you define the preprocessor option as the [handlebars](preprocessor-options#handlebars), then will be
-> used the `/\.(html|hbs|handlebars)$/` RegExp automatically.
+## Examples
+
+**Preprocessor configuration**:
+
+```js
+new HtmlBundlerPlugin({
+  preprocessor: "eta", // test: /\.(html|eta)$/i
+}),
+```
+
+**Custom pattern**:
+
+```js
+new HtmlBundlerPlugin({
+  test: /\.eta$/i
+  preprocessor: "eta",
+}),
+```

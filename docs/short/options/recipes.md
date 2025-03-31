@@ -10,3 +10,5 @@ Since the recipes do not yet exist, linters report errors. Dummy headers will su
 The list of headers should be used as a list of packages to be ported from the main repository.
 
 #### recipe-preprocessor-php
+
+#### split-chunks-keep-module-name

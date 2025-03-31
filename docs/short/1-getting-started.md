@@ -13,13 +13,13 @@ npm install html-bundler-webpack-plugin --save-dev
 
 ### Quick start
 
-[Source code](../examples/hello-world) | [Open in Stackblitz][hello-world-demo-url]
+[Source code](../../examples/hello-world) | [Open in Stackblitz][hello-world-demo-url]
 
 ```bash
 npm i -D webpack css-loader html-bundler-webpack-plugin
 ```
 
-[webpack.config.js](../examples/hello-world/webpack.config.js)
+[webpack.config.js](../../examples/hello-world/webpack.config.js)
 
 ```js
 import HtmlBundlerPlugin from "html-bundler-webpack-plugin";
@@ -51,7 +51,7 @@ const config = {
 export default config;
 ```
 
-[src/views/index.html](../examples/hello-world/src/views/index.html)
+[src/views/index.html](../../examples/hello-world/src/views/index.html)
 
 ```html
 <!DOCTYPE html>
@@ -76,13 +76,13 @@ export default config;
 </html>
 ```
 
-[src/js/main.js](../examples/hello-world/src/js/main.js)
+[src/js/main.js](../../examples/hello-world/src/js/main.js)
 
 ```js
 console.log(">> main");
 ```
 
-[src/css/styles.css](../examples/hello-world/src/css/styles.css)
+[src/css/styles.css](../../examples/hello-world/src/css/styles.css)
 
 ```css
 body {

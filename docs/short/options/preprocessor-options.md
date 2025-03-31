@@ -24,7 +24,7 @@ The default value depends on the selected [`preprocessor`](preprocessor#preproce
 },
 ```
 
-**Example**
+##### Example
 
 **File Structure**:
 
@@ -64,7 +64,7 @@ If partials have `.eta` extensions, then the extension can be omitted in the inc
 },
 ```
 
-**Example**
+##### Example
 
 **File Structure**:
 
