@@ -1,19 +1,16 @@
 > :::info
 >
-> ‼️ This documentation is currently in the process of being migrated from a single [README](https://github.com/webdiscus/html-bundler-webpack-plugin) file to structured docs.
+> ‼️ This documentation is currently in the process of being migrated from a single [README](https://github.com/webdiscus/html-bundler-webpack-plugin/blob/564b829907eae9f7d5f65d7c258e653cb2a41eef/README.md) file to structured docs.
 
-An HTML bundler is a tool that processes and optimizes HTML files by bundling
-related assets such as CSS, JavaScript, images, fonts, and other resources.
-It simplifies the development workflow by resolving dependencies,
-injecting resources, and optimizing files for production.
-
-The HTML bundler plugin automate the process of managing and injecting assets into HTML files.
+An HTML bundler is a tool that streamlines the creation of complete web pages by processing HTML templates with linked assets.
+It automates the resolving of dependencies, compiles templates, and ensures that the output HTML contains correct output URLs.
 
 ## What does an HTML bundler do?
 
-- Processes HTML files – Parses and transforms HTML files based on project configurations.
-- Injects assets dynamically – Automatically inserts `<script>`, `<link />`, and other tags for bundled CSS, JS, and images.
-- Optimizes assets – Minifies, compresses, and hashes file names for better performance.
-- Handles dependencies – Resolves imported modules, like JavaScript and CSS, within HTML.
-- Supports template engines – Can compile and bundle files using template engines like Pug, EJS, etc.
-- Improves caching – Generates versioned asset filenames for cache-busting.
+- **Treats HTML as an entry point**: Initiates the build process from HTML, allowing direct inclusion of source asset files like scripts and styles.
+- **Processes HTML templates**: Supports various template engines such as EJS, Handlebars, Nunjucks, Pug, and more.
+- **Handles dependencies**: Resolves source files referenced in HTML, such as SCSS, JS, images, updating their references with correct output URLs.
+- **Inlines resources**: Provides options to inline JavaScript, CSS, and images.
+- **Generates preload tags**: Automatically creates `<link rel="preload">` tags for assets to enhance resource loading.
+- **Generates integrity attributes**:  Adds `integrity` attributes to `<link>` and `<script>` tags to ensure resource integrity and security.
+- **Generates favicons**: Creates favicons of various sizes for different platforms and injects them into the HTML.
