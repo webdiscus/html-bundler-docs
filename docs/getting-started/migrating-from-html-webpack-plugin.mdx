@@ -1,0 +1,413 @@
+---
+sidebar_position: 99
+title: Migrating from html-webpack-plugin
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# <!-- empty head because the title is too long -->
+
+## Migrating from HTML Webpack Plugin
+
+For years, configuring [html-webpack-plugin][html-webpack-plugin] for multiple pages was a hassle.
+Each page required manually defining the `chunks` option to reference JavaScript files from the entry configuration,
+leading to a frustrating "chunks hell" configuration.
+
+Also, `html-webpack-plugin` alone is not enough. Rendering an HTML template containing JS, CSS, SVG, images and other assets requires additional "crutches" as plugins for `html-webpack-plugin`, as well additional plugins and loaders.
+
+Thus, this plugin requires a whole bunch of additional plugins and loaders, many of which have not been supported for a long time, which limits the use of the plugin itself.
+
+
+To solve this and many other problems,
+was created `html-bundler-webpack-plugin` — an "all-in-one" solution that simplifies HTML handling
+and automatically manages asset dependencies with ease.
+
+
+
+## Multiple pages example
+
+```text
+my-project/
+├── dist/  (generated output)
+├── src/
+│   ├── scripts/
+│   │   ├── main.js
+│   ├── pages/
+│   │   ├── home/
+│   │   │   ├── index.html
+│   │   │   ├── style.scss
+│   │   │   ├── script.js
+│   │   ├── about/
+│   │   │   ├── index.html
+│   │   │   ├── style.scss
+│   │   │   ├── script.js
+├── webpack.config.js
+└── package.json
+```
+
+<Tabs groupId="home">
+  <TabItem value="html" label="src/pages/home/index.html">
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    <body>
+      <h1>Home</h1>
+    </body>
+    </html>
+    ```
+  </TabItem>
+  <TabItem value="js" label="src/pages/home/script.js">
+    ```js
+    // empty JS is only needed to import a page-specifically style
+    import './style.scss'
+    ```
+  </TabItem>
+  <TabItem value="scss" label="src/pages/home/style.scss">
+    ```scss
+    h1 {
+      color: green;
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+**Webpack config**:
+
+```js
+const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+  output: {
+    filename: 'js/[name].[contenthash:8].js'
+  },
+  entry: {
+    main: './src/scripts/main.js',
+    home: './src/pages/home/script.js',
+    about: './src/pages/about/script.js',
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/pages/home/index.html',
+      filename: 'index.html', // Output dist/index.html
+      title: 'Home',
+      chunks: ['main', 'home'], // Include scripts in this template
+      inject: 'body',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/pages/about/index.html',
+      filename: 'about.html', // Output dist/about.html
+      title: 'About',
+      chunks: ['main', 'about'], // Include scripts in this template
+      inject: 'body',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.s?css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
+      },
+    ],
+  },
+};
+```
+
+## Step by step
+
+### Step 1: Replace packages
+
+The `html-bundler-webpack-plugin` replaces the functionality of `html-webpack-plugin`, `mini-css-extract-plugin`, and other [plugins and loaders](/introduction#related-plugins-and-loaders):
+
+```diff
+- const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+- const HtmlWebpackPlugin = require('html-webpack-plugin');
++ const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+```
+
+### Step 2: Remove loaders
+
+The `html-bundler-webpack-plugin` extracts CSS automatically.
+
+Remove `MiniCssExtractPlugin.loader` from the module rule:
+```diff
+{
+  test: /\.s?css$/,
+  use: [
+-    MiniCssExtractPlugin.loader,
+    'css-loader',
+    'sass-loader',
+  ],
+},
+```
+
+Or if used `style-loader`, remove it from the module rule:
+```diff
+{
+  test: /\.s?css$/,
+  use: [
+-   'style-loader',
+    'css-loader',
+    'sass-loader',
+  ],
+},
+```
+
+### Step 3: Replace plugin
+
+Replace all `HtmlWebpackPlugin` with single `HtmlBundlerPlugin`:
+
+- Place the options object of each `HtmlWebpackPlugin` instance into [`entry` collection](/plugin-options-entry#entry-collection) of `HtmlBundlerPlugin`.
+- Rename the `template` property to `import`.
+- Place template variables, e.g. `title`, into [`data` option](/plugin-options-entry#data-as-object).
+- Remove needless options, such as `chunks`, `chunksSortMode`, `excludeChunks`, `inject`, etc.
+
+```diff
+plugins: [
+-  new HtmlWebpackPlugin({
+-    template: './src/pages/home/index.html',
+-    filename: 'index.html', // Output dist/index.html
+-    title: 'Home',
+-    chunks: ['main', 'home'], // Include scripts in this template
+-    inject: 'body',
+-  }),
+-  new HtmlWebpackPlugin({
+-    template: './src/pages/about/index.html',
+-    filename: 'about.html', // Output dist/about.html
+-    title: 'About',
+-    chunks: ['main', 'about'], // Include scripts in this template
+-    inject: 'body',
+-  }),
++  new HtmlBundlerPlugin({
++    entry: [
++      {
++        import: './src/pages/home/index.html',
++        filename: 'index.html', // Output dist/index.html
++        data: { title: 'Home', },
++      },
++      {
++        import: './src/pages/about/index.html',
++        filename: 'about.html', // Output dist/about.html
++        data: { title: 'About', },
++      },
++    ],
++  }),
+],
+```
+
+### Step 4: Add `<script>` and `<link>` tags into HTML
+
+Specify source script and style files in an HTML template using a relative path or a Webpack alias:
+
+```diff
+<!DOCTYPE html>
+<html lang="en">
+  <head>
++   <link href="./style.scss" rel="stylesheet">
+  </head>
+  <body>
+    ...
++   <script src="../../scripts/main.js"></script>
+  </body>
+</html>
+```
+
+> :::tip
+> Use Webpack aliases to avoid relative paths like `../../scripts/main.js`:
+
+```diff
+- <script src="../../scripts/main.js"></script>
++ <script src="@scripts/main.js"></script>
+```
+
+Specify aliases in the Webpack config:
+```diff
+module.exports = {
++  resolve: {
++    alias: {
++      '@scripts': path.join(__dirname, 'src/scripts'),
++    },
++  },
+};
+```
+
+Remove Webpack entry option, because your scripts and styles are specified directly in HTML:
+
+```diff
+module.exports = {
+-  entry: {
+-    main: './src/scripts/main.js',
+-    home: './src/pages/home/script.js',
+-    about: './src/pages/about/script.js',
+-  },
+};
+```
+
+Optional: delete empty JS files containing imported styles only, because source styles specified directly in HTML.
+
+> :::info
+> The plugin supports imported styles in JS, so you can leave it as is.
+
+### Step 5: Check template variables
+
+The template variables defined in the `data` option are available in a template w/o any prefix.
+Just remove `htmlWebpackPlugin.options.` in the template:
+
+```diff
+- <title><%= htmlWebpackPlugin.options.title %></title>
++ <title><%= title %></title>
+```
+
+### Step 6: Move JS output filename
+
+```diff
+module.exports = {
+  output: {
+-    filename: 'js/[name].[contenthash:8].js',
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: [ ... ],
++     js: {
++       filename: 'js/[name].[contenthash:8].js',
++     },
+    }),
+  ],
+};
+```
+
+### Step 7: Move CSS output filename
+
+```diff
+module.exports = {
+  plugins: [
+-   new MiniCssExtractPlugin({
+-     filename: 'css/[name].[contenthash:8].css',
+-   }),
+    new HtmlBundlerPlugin({
+      entry: [ ... ],
+      js: { ... },
++     css: {
++       filename: 'css/[name].[contenthash:8].css',
++     },
+    }),
+  ],
+};
+```
+
+### Final Webpack config
+
+<Tabs groupId="configs">
+  <TabItem value="HtmlBundlerPlugin" label="NEW: using HtmlBundlerPlugin">
+    ```js
+    const path = require('path');
+    const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+    module.exports = {
+      resolve: {
+        alias: {
+          '@scripts': path.join(__dirname, 'src/scripts'),
+        },
+      },
+      plugins: [
+        new HtmlBundlerPlugin({
+          entry: [
+            {
+              import: './src/pages/home/index.html',
+              filename: 'index.html', // Output dist/index.html
+              data: { title: 'Home', },
+            },
+            {
+              import: './src/pages/about/index.html',
+              filename: 'about.html', // Output dist/about.html
+              data: { title: 'About', },
+            },
+          ],
+          js: {
+            filename: 'js/[name].[contenthash:8].js',
+          },
+          css: {
+            filename: 'css/[name].[contenthash:8].css',
+          },
+        }),
+      ],
+      module: {
+        rules: [
+          {
+            test: /\.s?css$/,
+            use: [
+              'css-loader',
+              'sass-loader',
+            ],
+          },
+        ],
+      },
+    };
+    ```
+  </TabItem>
+  <TabItem value="HtmlWebpackPlugin" label="OLD: using HtmlWebpackPlugin">
+    ```js
+    const path = require('path');
+    const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+    module.exports = {
+      output: {
+        filename: 'js/[name].[contenthash:8].js'
+      },
+      entry: {
+        main: './src/scripts/main.js',
+        home: './src/pages/home/script.js',
+        about: './src/pages/about/script.js',
+      },
+      plugins: [
+        new MiniCssExtractPlugin({
+          filename: 'css/[name].[contenthash:8].css',
+        }),
+        new HtmlWebpackPlugin({
+          template: './src/pages/home/index.html',
+          filename: 'index.html', // Output dist/index.html
+          title: 'Home',
+          chunks: ['main', 'home'], // Include scripts in this template
+          inject: 'body',
+        }),
+        new HtmlWebpackPlugin({
+          template: './src/pages/about/index.html',
+          filename: 'about.html', // Output dist/about.html
+          title: 'About',
+          chunks: ['main', 'about'], // Include scripts in this template
+          inject: 'body',
+        }),
+      ],
+      module: {
+        rules: [
+          {
+            test: /\.s?css$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              'css-loader',
+              'sass-loader',
+            ],
+          },
+        ],
+      },
+    };
+    ```
+  </TabItem>
+</Tabs>
+
+
+
+[html-webpack-plugin]: https://github.com/jantimon/html-webpack-plugin
