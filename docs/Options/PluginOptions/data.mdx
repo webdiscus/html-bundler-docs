@@ -5,6 +5,9 @@ title: data
 tags: [entry, data, template]
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # External data for all templates
 
 Option: `data`
@@ -39,20 +42,80 @@ Directly defines data as a JavaScript object.
 
 - **HMR Support**: Requires Webpack restart to reflect changes.
 
-**Example**:
+**Example**
 
+> :::info
+> The example uses the default [Eta][eta-url] template engine.
+> For details, see the [preprocessor](/plugin-options-preprocessor) option.
+
+Webpack config (webpack.config.js):
 ```js
-// webpack.config.js
 module.exports = {
   plugins: [
     new HtmlBundlerWebpackPlugin({
       entry: {
-        index: "path/to/template.eta",
+        index: './src/templates/home.eta',
+        about: './src/templates/about.eta',
       },
-      data: { title: "Page Title", description: "Page Description" },
+      data: {
+        company: {
+          name: 'Awesome Corp',
+          address: '123 Main Street, Springfield',
+          phone: '+1 234 567 890',
+          email: 'info@awesomecorp.com',
+        },
+      },
     }),
   ],
 };
+```
+
+Templates:
+
+<Tabs groupId="templates">
+  <TabItem value="home" label="src/templates/home.eta">
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Home</title>
+</head>
+<body>
+  <h1>Welcome to <%= company.name %></h1>
+
+  <% /* pass data to the partial with `it` */ %>
+  <%~ include('src/templates/partials/footer.html', it) %>
+</body>
+</html>
+```
+  </TabItem>
+  <TabItem value="about" label="src/templates/about.eta">
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>About</title>
+</head>
+<body>
+  <h1>About <%= company.name %></h1>
+
+  <% /* pass data to the partial with `it` */ %>
+  <%~ include('src/templates/partials/footer.html', it) %>
+</body>
+</html>
+```
+  </TabItem>
+</Tabs>
+
+Shared footer (src/templates/partials/footer.eta):
+
+```html
+<footer>
+  <p>&copy; <%= company.name %> - All rights reserved</p>
+  <p>Address: <%= company.address %></p>
+  <p>Phone: <%= company.phone %></p>
+  <p>Email: <%= company.email %></p>
+</footer>
 ```
 
 ### `string` File Reference Data
@@ -71,21 +134,53 @@ For a JavaScript file, the module must export an object.
 
 - Changes initiate Webpack recompilation if the file is part of the watch configuration.
 
-**Example**:
+**Example**
 
+Webpack config (webpack.config.js):
 ```js
-// webpack.config.js
 module.exports = {
   plugins: [
     new HtmlBundlerWebpackPlugin({
       entry: {
-        index: "path/to/template.eta",
+        index: './src/templates/home.eta',
+        about: './src/templates/about.eta',
       },
-      data: "path/to/renderData.json",
+      data: './src/data/company.json',
     }),
   ],
 };
 ```
+
+Template data file (JSON and JavaScript format):
+
+<Tabs groupId="data">
+  <TabItem value="JSON" label="src/data/company.json">
+```json
+{
+  "company": {
+    "name": "Awesome Corp",
+    "address": "123 Main Street, Springfield",
+    "phone": "+1 234 567 890",
+    "email": "info@awesomecorp.com"
+  }
+}
+```
+  </TabItem>
+  <TabItem value="about" label="src/data/company.js">
+```js
+module.exports = {
+  company: {
+    name: 'Awesome Corp',
+    address: '123 Main Street, Springfield',
+    phone: '+1 234 567 890',
+    email: 'info@awesomecorp.com',
+  },
+};
+```
+  </TabItem>
+</Tabs>
+
+See template examples by [Object-Based Data](#object-object-based-data).
 
 ## Use Case Comparison
 
@@ -105,3 +200,4 @@ Relative paths are resolved using Webpack the `context` configuration.
 
 [webpack-context-url]: https://webpack.js.org/configuration/entry-context/#context
 [webpack-hmr-url]: https://webpack.js.org/concepts/hot-module-replacement/#get-started
+[eta-url]: https://eta.js.org

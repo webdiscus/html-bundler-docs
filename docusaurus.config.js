@@ -64,6 +64,11 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/social-card.jpg',
+      docs: {
+        sidebar: {
+          hideable: true,
+        },
+      },
       navbar: {
         title: '',
         logo: {
@@ -115,8 +120,10 @@ const config = {
           },
           {
             href: 'https://github.com/webdiscus/html-bundler-webpack-plugin',
-            label: 'GitHub',
+            //label: 'GitHub',
             position: 'right',
+            className: 'header-github-link',
+            'aria-label': 'GitHub repository',
           },
         ],
       },
@@ -126,6 +133,10 @@ const config = {
           {
             title: 'Docs',
             items: [
+              {
+                label: 'Introduction',
+                to: 'introduction',
+              },
               {
                 label: 'Getting Started',
                 to: 'category/getting-started',

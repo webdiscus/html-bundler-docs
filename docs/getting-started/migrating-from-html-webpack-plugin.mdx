@@ -66,13 +66,6 @@ my-project/
     import './style.scss'
     ```
   </TabItem>
-  <TabItem value="scss" label="src/pages/home/style.scss">
-    ```scss
-    h1 {
-      color: green;
-    }
-    ```
-  </TabItem>
 </Tabs>
 
 **Webpack config**:
@@ -127,6 +120,8 @@ module.exports = {
 
 ## Step by step
 
+First, [install `html-bundler-webpack-plugin`](/getting-started/installation).
+
 ### Step 1: Replace packages
 
 The `html-bundler-webpack-plugin` replaces the functionality of `html-webpack-plugin`, `mini-css-extract-plugin`, and other [plugins and loaders](/introduction#related-plugins-and-loaders):
@@ -164,6 +159,10 @@ Or if used `style-loader`, remove it from the module rule:
   ],
 },
 ```
+
+> :::warning
+> Ensure that `css-loader` is first in the `use: []` array and no other loaders come before it,
+> because the plugin relies on the result of `css-loader` to extract CSS.
 
 ### Step 3: Replace plugin
 
@@ -207,7 +206,48 @@ plugins: [
 ],
 ```
 
-### Step 4: Add `<script>` and `<link>` tags into HTML
+### Step 4: Move JS output filename
+
+Move the `output.filename` to the [`js.filename`](/plugin-options-js) plugin option to keep related options at the same place:
+
+```diff
+module.exports = {
+  output: {
+-    filename: 'js/[name].[contenthash:8].js',
+  },
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: [ ... ],
++     js: {
++       filename: 'js/[name].[contenthash:8].js',
++     },
+    }),
+  ],
+};
+```
+
+### Step 5: Move CSS output filename
+
+Add [`css.filename`](/plugin-options-css) to the plugin options and remove `MiniCssExtractPlugin`:
+
+```diff
+module.exports = {
+  plugins: [
+-   new MiniCssExtractPlugin({
+-     filename: 'css/[name].[contenthash:8].css',
+-   }),
+    new HtmlBundlerPlugin({
+      entry: [ ... ],
+      js: { ... },
++     css: {
++       filename: 'css/[name].[contenthash:8].css',
++     },
+    }),
+  ],
+};
+```
+
+### Step 6: Add `<script>` and `<link>` tags into HTML
 
 Specify source script and style files in an HTML template using a relative path or a Webpack alias:
 
@@ -225,7 +265,7 @@ Specify source script and style files in an HTML template using a relative path 
 ```
 
 > :::tip
-> Use Webpack aliases to avoid relative paths like `../../scripts/main.js`:
+> Use [Webpack alias](https://webpack.js.org/configuration/resolve/#resolvealias) to avoid relative paths like `../../scripts/main.js`:
 
 ```diff
 - <script src="../../scripts/main.js"></script>
@@ -260,9 +300,9 @@ Optional: delete empty JS files containing imported styles only, because source 
 > :::info
 > The plugin supports imported styles in JS, so you can leave it as is.
 
-### Step 5: Check template variables
+### Step 7: Check template variables
 
-The template variables defined in the `data` option are available in a template w/o any prefix.
+The template variables defined in the [`data`](/plugin-options-entry#entrydescription) option are available in a template w/o any prefix.
 Just remove `htmlWebpackPlugin.options.` in the template:
 
 ```diff
@@ -270,42 +310,8 @@ Just remove `htmlWebpackPlugin.options.` in the template:
 + <title><%= title %></title>
 ```
 
-### Step 6: Move JS output filename
-
-```diff
-module.exports = {
-  output: {
--    filename: 'js/[name].[contenthash:8].js',
-  },
-  plugins: [
-    new HtmlBundlerPlugin({
-      entry: [ ... ],
-+     js: {
-+       filename: 'js/[name].[contenthash:8].js',
-+     },
-    }),
-  ],
-};
-```
-
-### Step 7: Move CSS output filename
-
-```diff
-module.exports = {
-  plugins: [
--   new MiniCssExtractPlugin({
--     filename: 'css/[name].[contenthash:8].css',
--   }),
-    new HtmlBundlerPlugin({
-      entry: [ ... ],
-      js: { ... },
-+     css: {
-+       filename: 'css/[name].[contenthash:8].css',
-+     },
-    }),
-  ],
-};
-```
+> :::tip
+> To pass a variable into all templates use the global [`data`](/plugin-options-data) plugin option.
 
 ### Final Webpack config
 
