@@ -30,6 +30,6 @@
     "cspell": "^8.17.5",
     "dprint": "^0.50.1",
     "malva": "^0.11.2",
-    "markdownlint-cli2": "^0.17.2"
+    "markdownlint-cli2": "^0.18.1"
   }
 }
