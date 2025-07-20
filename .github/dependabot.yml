@@ -10,18 +10,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "master"
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
     target-branch: "docusaurus"
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    target-branch: "master"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
