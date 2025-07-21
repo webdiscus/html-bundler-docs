@@ -22,6 +22,6 @@ jobs:
 
       - name: Build & Deploy
         env:
-          GIT_USER: webdiscus # GitHub username
+          GIT_USER: ${{ secrets.GIT_USER }} # GitHub username
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # built-in GitHub token
         run: npm run deploy
