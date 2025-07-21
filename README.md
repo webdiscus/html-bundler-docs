@@ -3,7 +3,7 @@
 Documentation for [html-bundler-webpack-plugin](https://github.com/webdiscus/html-bundler-webpack-plugin).
 
 - Build with [Docusaurus](https://docusaurus.io)
-- Hosted on GitHub Pages: https://webdiscus.github.io/html-bundler-webpack-plugin
+- Hosted on GitHub Pages: https://webdiscus.github.io/html-bundler-docs
 
 ## Contribute
 

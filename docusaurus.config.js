@@ -18,7 +18,7 @@ const config = {
   url: 'https://webdiscus.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/html-bundler-webpack-plugin/',
+  baseUrl: '/html-bundler-docs/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
