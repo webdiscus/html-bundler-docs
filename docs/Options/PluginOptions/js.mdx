@@ -133,14 +133,51 @@ new HtmlBundlerPlugin({
 - `runtime.xxxxxxxx.js` -> Inlined into HTML.
 ```
 
+> :::warning
+> Inlining Webpack’s runtime chunks disables the `publicPath: "auto"` option.
+> Webpack’s runtime determines the public path using `currentScript.src`, but inlining removes the `src` attribute.
+> This causes automatic resolution to fail, and the browser may show:
+> `"Automatic publicPath is not supported in this browser"`.
+>
+> Possible solutions:
+> 1. Use an absolute or relative path in `output.publicPath`.
+> 2. Set `__webpack_public_path__` manually at runtime in your entry point.
+>    See [Webpack’s guide on setting publicPath on the fly](https://webpack.js.org/guides/public-path/) for details.
+
 ### Chunk Splitting
 
+Make sure the `test` field matches only script modules — such as `.js`, `.ts`, `.mjs`, etc — to avoid invalid outputs.
+
 ```js
-optimization: {
-  splitChunks: {
-    test: /\.(js|mjs)$/, // Required to avoid invalid outputs
+splitChunks: {
+  cacheGroups: {
+    app: {
+      chunks: "all",
+      test: /\.[cm]?[tj]s$/i, // Ensure only script files are matched for proper chunk splitting
+    },
   },
-},
+}
+```
+
+Use a function to target scripts more precisely and to debug which modules are picked.
+
+```js
+splitChunks: {
+  cacheGroups: {
+    app: {
+      chunks: "all",
+      test: (module) => {
+        const match = module.type?.includes("javascript");
+        // Match debugging: JavaScript modules in glorious disarray
+        if (match) {
+          console.log("[app]", module.resource);
+        }
+
+        return match && "resource" in module && /\.[cm]?[tj]s$/i.test(module.resource);
+      },
+    },
+  },
+}
 ```
 
 > :::warning
