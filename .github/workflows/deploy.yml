@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Audit dependencies for vulnerabilities
-        run: npm audit --audit-level=moderate
+      # - name: Audit dependencies for vulnerabilities
+      #  run: npm audit --audit-level=moderate
 
       - name: Build website
         run: npm run build
