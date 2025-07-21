@@ -146,11 +146,25 @@ new HtmlBundlerPlugin({
 
 ### Chunk Splitting
 
+Make sure the `test` field matches only script modules — such as `.js`, `.ts`, `.mjs`, etc — to avoid invalid outputs.
+
 ```js
 splitChunks: {
   cacheGroups: {
     app: {
-      name: "app",
+      chunks: "all",
+      test: /\.[cm]?[tj]s$/i, // Ensure only script files are matched for proper chunk splitting
+    },
+  },
+}
+```
+
+Use a function to target scripts more precisely and to debug which modules are picked.
+
+```js
+splitChunks: {
+  cacheGroups: {
+    app: {
       chunks: "all",
       test: (module) => {
         const match = module.type?.includes("javascript");
@@ -159,7 +173,7 @@ splitChunks: {
           console.log("[app]", module.resource);
         }
 
-        return match && "resource" in module && /\.m?[tj]s$/i.test(module.resource);
+        return match && "resource" in module && /\.[cm]?[tj]s$/i.test(module.resource);
       },
     },
   },
