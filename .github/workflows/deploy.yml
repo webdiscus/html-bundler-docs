@@ -20,8 +20,16 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Build & Deploy
-        env:
-          GIT_USER: ${{ secrets.GIT_USER }} # GitHub username
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # built-in GitHub token
-        run: npm run deploy
+      - name: Audit dependencies for vulnerabilities
+        run: npm audit --audit-level=moderate
+
+      - name: Build website
+        run: npm run build
+
+      - name: Deploy with GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          user_name: ${{ secrets.GIT_USER_NAME }}
+          user_email: ${{ secrets.GIT_USER_EMAIL }}
