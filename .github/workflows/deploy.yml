@@ -4,6 +4,9 @@ on:
   push:
     branches: [docusaurus] # Trigger when pushing to the 'docusaurus' branch
 
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
