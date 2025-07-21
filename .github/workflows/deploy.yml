@@ -2,20 +2,29 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [docusaurus] # Trigger when pushing to the 'docusaurus' branch
+    branches: [docusaurus]
+    tags:
+      - 'v*'
+
+  pull_request:
+    types: [closed]
+    branches: [docusaurus]
 
 permissions:
   contents: write
 
 jobs:
   build-and-deploy:
+    if: >
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+      || (github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v'))
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -23,16 +32,13 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      # - name: Audit dependencies for vulnerabilities
-      #  run: npm audit --audit-level=moderate
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
+          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
 
-      - name: Build website
-        run: npm run build
-
-      - name: Deploy with GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          user_name: ${{ secrets.GIT_USER_NAME }}
-          user_email: ${{ secrets.GIT_USER_EMAIL }}
+      - name: Deploy with Docusaurus
+        env:
+          GIT_USER: ${{ secrets.GIT_USER_NAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run deploy
