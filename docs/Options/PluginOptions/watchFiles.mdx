@@ -34,6 +34,9 @@ watchFiles: {
 }
 ```
 
+The `watchFiles` option allow specify additional files (besides the default ones) to rebuild
+when they change during development (with `webpack --serv` or `webpack --watch`).
+
 Allows to configure paths and files to watch file changes for rebuild in `watch` or `serv` mode.
 
 > :::info
@@ -54,29 +57,41 @@ Defaults, are watched only files that match the [`test`](/plugin-options-test) p
 
 This options does not override the default values, but extends them.
 
-For example, all source files are in the `./src` directory,
-while some partials included in a template are in `./vendor/` directory, then add it to the `paths`:
+**Example**
 
-```js
-watchFiles: {
-  paths: ['vendor'],
-},
-```
+All source files are in the `./src` directory,
+while some partials included in a template are in `./vendor/` directory, then add it to the `paths`.
 
 If you want watch changes in some special files used in your template that are only loaded through the template engine,
-add them to the `includes` property:
+add them to the `includes` property.
 
 ```js
-watchFiles: {
-  paths: ['vendor'],
-  includes: [
-    /data\.(js|json)$/,
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new HtmlBundlerPlugin({
+      entry: {
+        index: 'src/views/index.html',
+      },
+      watchFiles: [
+        paths: ['vendor'],
+        includes: [
+          /data\/.+\.(js|json)$/, // watch all JSON or JS files in the `vendor/data/` directory
+          /docs\/.+\.md$/, // watch all MD files in the `vendor/docs/` directory
+        ],
+      ],
+    }),
   ],
-},
+};
 ```
 
+**In this example:**\
+When any `.json` or `.js` file in `vendor/data/` or any `.md` file in `vendor/docs/` changes,
+the plugin triggers a rebuild and updates the output.
+
 To exclude watching of files defined in `paths` and `includes`, you can use the `excludes` option.
-This option has the priority over paths and files.
+This option has the priority over `paths` and `includes`.
 
 > :::info
 >

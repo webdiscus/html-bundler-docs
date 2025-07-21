@@ -14,8 +14,8 @@ This plugin will generate an HTML file containing all the necessary links to JS,
 
 - An [entry point](/plugin-options-entry) is any HTML template. **Start from HTML or template**, not from JS.
 - **Automatically** processes templates found in the [entry directory](/plugin-options-entry#template-directory-reference).
-- Build-in support for [template engines](/category/template-engines): [Eta](/guides/preprocessor/eta), [EJS](/guides/preprocessor/ejs), [Handlebars](/guides/preprocessor/handlebars), [Nunjucks](/guides/preprocessor/nunjucks), [Pug](/guides/preprocessor/pug), [Tempura](/guides/preprocessor/tempura), [TwigJS](/guides/preprocessor/twig), [LiquidJS](/guides/preprocessor/liquid).
-- Build-in support for **Markdown** `*.md` files in templates, see [Markdown demo](https://stackblitz.com/edit/markdown-to-html-webpack?file=webpack.config.js) in browser.
+- Built-in support for [template engines](/category/template-engines): [Eta](/guides/preprocessor/eta), [EJS](/guides/preprocessor/ejs), [Handlebars](/guides/preprocessor/handlebars), [Nunjucks](/guides/preprocessor/nunjucks), [Pug](/guides/preprocessor/pug), [Tempura](/guides/preprocessor/tempura), [TwigJS](/guides/preprocessor/twig), [LiquidJS](/guides/preprocessor/liquid).
+- Built-in support for **Markdown** `*.md` files in templates, see [Markdown demo](https://stackblitz.com/edit/markdown-to-html-webpack?file=webpack.config.js) in browser.
 - Allows to [pass data](/plugin-options-entry#entrydescriptiondata) into a template.
 - **Resolve** [source files](/plugin-options-sources) of [`scripts`](/plugin-options-js), [`styles`](/plugin-options-css), images and other assets in HTML:
   - `<link href="./style.scss" rel="stylesheet">`
