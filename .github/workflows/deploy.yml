@@ -2,14 +2,15 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [docusaurus] # docusaurus branch contains the docs
+    branches: [docusaurus] # Trigger when pushing to the 'docusaurus' branch
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -20,4 +21,7 @@ jobs:
         run: npm i
 
       - name: Build & Deploy
+        env:
+          GIT_USER: webdiscus # GitHub username
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # built-in GitHub token
         run: npm run deploy
